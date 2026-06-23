@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClassRoom Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#6366f1;--primary-light:#a5b4fc;--primary-dark:#4f46e5;
+  --gradient:linear-gradient(135deg,#6366f1,#8b5cf6,#a855f7);
+  --gradient-soft:linear-gradient(135deg,#eef2ff,#f5f3ff,#faf5ff);
+  --bg:#f8fafc;--bg-alt:#f1f5f9;
+  --card:#ffffff;--card-hover:#fafaff;
+  --text:#0f172a;--text-secondary:#475569;--text-muted:#94a3b8;
+  --border:#e2e8f0;--border-focus:#6366f1;
+  --success:#10b981;--warning:#f59e0b;--danger:#ef4444;--info:#3b82f6;
+  --success-soft:rgba(16,185,129,.1);--warning-soft:rgba(245,158,11,.1);--danger-soft:rgba(239,68,68,.1);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.05),0 2px 4px rgba(0,0,0,.03);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.04);
+  --shadow-xl:0 24px 64px rgba(0,0,0,.12);
+  --radius-xs:6px;--radius-sm:10px;--radius:16px;--radius-lg:24px;--radius-full:9999px;
+  --transition:0.25s cubic-bezier(0.4,0,0.2,1);
+  --font:'Tajawal',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--text);
+  min-height:100vh;overflow-x:hidden;line-height:1.5;-webkit-font-smoothing:antialiased
+}
+body.en{direction:ltr}
+body.en .lang-ar{display:none!important}
+body:not(.en) .lang-en{display:none!important}
+::selection{background:var(--primary);color:#fff}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-muted)}
+
+/* ===== SPLASH ===== */
+#splash{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--gradient);transition:opacity .6s,transform .6s;overflow:hidden}
+#splash::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:rgba(255,255,255,.05);top:-150px;right:-150px;animation:splashFloat 8s ease-in-out infinite}
+#splash::after{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-100px;left:-100px;animation:splashFloat 10s ease-in-out infinite reverse}
+@keyframes splashFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+#splash.hide{opacity:0;transform:scale(1.08);pointer-events:none}
+.splash-logo{font-size:3.2rem;font-weight:900;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:6px;letter-spacing:-1px;position:relative;z-index:1;text-shadow:0 2px 20px rgba(0,0,0,.1)}
+.splash-logo span{font-size:16px;opacity:.75;font-weight:500}
+.splash-sub{color:rgba(255,255,255,.75);font-size:15px;margin-bottom:28px;position:relative;z-index:1;letter-spacing:.3px}
+.splash-loader{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;position:relative;z-index:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== LOGIN ===== */
+#loginPage{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;background:var(--gradient-soft);position:relative}
+#loginPage.show{display:flex}
+#loginPage::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:.5}
+.login-box{background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-radius:var(--radius-lg);padding:44px 40px;width:100%;max-width:420px;box-shadow:var(--shadow-xl);animation:fadeUp .6s ease;border:1px solid rgba(255,255,255,.8);position:relative}
+.login-box h1{font-size:28px;text-align:center;margin-bottom:2px;display:flex;align-items:center;justify-content:center;gap:8px}
+.login-box .sub{text-align:center;color:var(--text-secondary);margin-bottom:24px;font-size:14px}
+.input-group{margin-bottom:16px}
+.input-group label{display:block;font-size:12px;font-weight:600;margin-bottom:5px;color:var(--text-secondary);letter-spacing:.3px}
+.input-group input,.input-group select{width:100%;padding:12px 16px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;transition:var(--transition);background:var(--card);outline:none;color:var(--text)}
+.input-group input:focus,.input-group select:focus{border-color:var(--border-focus);box-shadow:0 0 0 4px rgba(99,102,241,.1);background:#fff}
+.role-selector{display:flex;gap:10px;margin-bottom:20px}
+.role-btn{flex:1;padding:14px 10px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--card);cursor:pointer;text-align:center;transition:var(--transition);font-family:inherit;font-size:13px;font-weight:600;color:var(--text-muted);position:relative;overflow:hidden}
+.role-btn::before{content:'';position:absolute;inset:0;background:var(--gradient);opacity:0;transition:var(--transition)}
+.role-btn:hover{border-color:var(--primary-light);transform:translateY(-1px)}
+.role-btn.active{border-color:var(--primary);color:#fff}
+.role-btn.active::before{opacity:1}
+.role-btn .icon{display:block;font-size:26px;margin-bottom:4px;position:relative;z-index:1}
+.role-btn span:not(.icon){position:relative;z-index:1}
+.role-btn.active span:not(.icon){color:#fff}
+
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 28px;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:var(--transition);text-decoration:none;position:relative;overflow:hidden;letter-spacing:.3px}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.1);opacity:0;transition:var(--transition)}
+.btn:hover::after{opacity:1}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--gradient);color:#fff;box-shadow:0 4px 16px rgba(99,102,241,.3)}
+.btn-primary:hover{box-shadow:0 8px 28px rgba(99,102,241,.4);transform:translateY(-2px)}
+.btn-success{background:var(--success);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,.3)}
+.btn-success:hover{box-shadow:0 8px 28px rgba(16,185,129,.35);transform:translateY(-2px)}
+.btn-danger{background:var(--danger);color:#fff;box-shadow:0 4px 16px rgba(239,68,68,.25)}
+.btn-danger:hover{box-shadow:0 8px 28px rgba(239,68,68,.3);transform:translateY(-2px)}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-outline{background:transparent;color:var(--text);border:2px solid var(--border)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);background:rgba(99,102,241,.04)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:none}
+.btn-ghost:hover{color:var(--text);background:rgba(0,0,0,.04)}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:var(--radius-xs)}
+.btn-xs{padding:5px 12px;font-size:11px;border-radius:5px}
+.btn-icon{width:38px;height:38px;padding:0;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);color:var(--text-muted);font-size:16px;position:relative;flex-shrink:0}
+.btn-icon:hover{border-color:var(--primary);color:var(--primary);background:rgba(99,102,241,.04);transform:translateY(-1px)}
+.badge-dot{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--card);padding:0 3px}
+
+/* ===== APP SHELL ===== */
+#app{display:none;min-height:100vh}
+#app.show{display:flex}
+.sidebar{width:260px;background:var(--card);border-left:1px solid var(--border);padding:24px 14px;display:flex;flex-direction:column;flex-shrink:0;height:100vh;position:sticky;top:0;z-index:50;transition:var(--transition)}
+body.en .sidebar{border-left:none;border-right:1px solid var(--border)}
+.sidebar-logo{font-size:20px;font-weight:900;display:flex;align-items:center;gap:8px;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:16px;cursor:pointer;transition:var(--transition)}
+.sidebar-logo:hover{opacity:.8}
+.sidebar-logo .badge{background:var(--gradient);color:#fff;font-size:8px;padding:2px 8px;border-radius:4px;font-weight:800;letter-spacing:.5px}
+.sidebar nav{flex:1;overflow-y:auto;padding:4px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--text-muted);font-weight:500;margin-bottom:2px;font-size:13px;position:relative}
+.nav-item:hover{background:rgba(99,102,241,.05);color:var(--text)}
+.nav-item.active{background:rgba(99,102,241,.1);color:var(--primary);font-weight:700}
+.nav-item.active::before{content:'';position:absolute;right:-14px;top:50%;transform:translateY(-50%);width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--gradient)}
+body.en .nav-item.active::before{right:auto;left:-14px;border-radius:3px 0 0 3px}
+.nav-item .icon{font-size:16px;width:22px;text-align:center}
+.sidebar-footer{padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sidebar-footer .avatar{width:36px;height:36px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0;box-shadow:0 2px 8px rgba(99,102,241,.3)}
+.sidebar-footer .info{flex:1;min-width:0}
+.sidebar-footer .name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-footer .role{font-size:11px;color:var(--text-muted)}
+.sidebar-toggle{display:none;position:fixed;top:12px;right:12px;z-index:100;width:38px;height:38px;border-radius:10px;background:var(--card);border:1px solid var(--border);cursor:pointer;font-size:16px;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+body.en .sidebar-toggle{right:auto;left:12px}
+
+/* ===== MAIN ===== */
+.main-content{flex:1;padding:28px 36px;min-width:0;max-height:100vh;overflow-y:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.topbar h1{font-size:26px;font-weight:900;letter-spacing:-.5px}
+.topbar h1 small{font-size:13px;font-weight:400;color:var(--text-muted);display:block;margin-top:3px;letter-spacing:0}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+.lang-toggle{display:flex;background:var(--card);border:2px solid var(--border);border-radius:8px;overflow:hidden}
+.lang-toggle button{padding:6px 12px;border:none;background:transparent;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:var(--transition);letter-spacing:.5px}
+.lang-toggle button.active{background:var(--gradient);color:#fff}
+.lang-toggle button:not(.active):hover{color:var(--text)}
+
+/* ===== STATS ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);transition:var(--transition);border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:transparent}
+.stat-card .s-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px}
+.stat-card .s-value{font-size:24px;font-weight:900;letter-spacing:-.5px}
+.stat-card .s-label{font-size:12px;color:var(--text-muted);margin-top:2px;font-weight:500}
+.stat-card.purple::before{background:var(--gradient)}
+.stat-card.purple .s-icon{background:rgba(99,102,241,.1);color:var(--primary)}
+.stat-card.green::before{background:var(--success)}
+.stat-card.green .s-icon{background:var(--success-soft);color:var(--success)}
+.stat-card.orange::before{background:var(--warning)}
+.stat-card.orange .s-icon{background:var(--warning-soft);color:var(--warning)}
+.stat-card.pink::before{background:#ec4899}
+.stat-card.pink .s-icon{background:rgba(236,72,153,.1);color:#ec4899}
+.stat-card.blue::before{background:var(--info)}
+.stat-card.blue .s-icon{background:rgba(59,130,246,.1);color:var(--info)}
+
+/* ===== SECTION ===== */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.section-header h2{font-size:18px;font-weight:700}
+.section-header h2 small{font-size:12px;font-weight:400;color:var(--text-muted);margin-right:6px}
+
+/* ===== COURSE GRID ===== */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:28px}
+.course-card{background:var(--card);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:var(--transition);border:2px solid transparent}
+.course-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-xl);border-color:var(--primary-light)}
+.course-card .cover{height:100px;position:relative;display:flex;align-items:flex-end;padding:14px 16px;}
+.course-card .cover .tag{background:rgba(255,255,255,.92);backdrop-filter:blur(8px);color:var(--text);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.course-card .body{padding:14px 16px 16px}
+.course-card .body h3{font-size:15px;font-weight:700;margin-bottom:3px}
+.course-card .body p{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.course-card .body .code-badge{display:inline-block;background:rgba(99,102,241,.08);color:var(--primary);padding:3px 10px;border-radius:5px;font-size:12px;font-weight:700;font-family:monospace;letter-spacing:1.5px}
+.course-card .body .meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+
+/* ===== JOIN ===== */
+.join-section{background:var(--card);border-radius:var(--radius-lg);padding:28px;box-shadow:var(--shadow);margin-bottom:28px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;border:1px solid var(--border)}
+.join-section .j-icon{width:48px;height:48px;border-radius:12px;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.join-section .j-text{flex:1;min-width:160px}
+.join-section .j-text h3{font-size:15px;font-weight:700}
+.join-section .j-text p{font-size:12px;color:var(--text-muted)}
+.join-section .join-input{display:flex;gap:8px;min-width:220px}
+.join-section .join-input input{flex:1;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:20px;font-family:monospace;text-align:center;letter-spacing:6px;outline:none;background:#fafaff;transition:var(--transition);font-weight:700;text-transform:uppercase}
+.join-section .join-input input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(99,102,241,.1)}
+
+/* ===== COURSE DETAIL ===== */
+.detail-header{background:var(--card);border-radius:var(--radius-lg);padding:24px 28px;box-shadow:var(--shadow);margin-bottom:20px;border:1px solid var(--border);position:relative;overflow:hidden}
+.detail-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient)}
+.detail-header h1{font-size:24px;font-weight:900;letter-spacing:-.5px}
+.detail-header p{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.detail-header .meta-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--text-muted)}
+.detail-header .meta-tags span{background:var(--bg-alt);padding:4px 10px;border-radius:6px}
+
+/* ===== COURSE TABS ===== */
+.course-tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--card);border-radius:var(--radius-sm);padding:4px;box-shadow:var(--shadow);overflow-x:auto;border:1px solid var(--border)}
+.course-tabs .tab{padding:10px 20px;border:none;background:transparent;border-radius:var(--radius-xs);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:var(--transition);white-space:nowrap}
+.course-tabs .tab:hover{color:var(--text);background:rgba(99,102,241,.05)}
+.course-tabs .tab.active{background:var(--gradient);color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(99,102,241,.25)}
+.tab-content{display:none}
+.tab-content.active{display:block;animation:fadeUp .35s ease}
+
+/* ===== LECTURES ===== */
+.lecture-list{position:relative}
+.lecture-list::before{content:'';position:absolute;left:16px;top:0;bottom:0;width:2px;background:var(--border)}
+body.en .lecture-list::before{left:auto;right:16px}
+.lecture-card{background:var(--card);border-radius:var(--radius);padding:16px 20px;padding-left:20px;box-shadow:var(--shadow-sm);margin-bottom:10px;transition:var(--transition);border:1px solid var(--border);position:relative}
+.lecture-card::before{content:'';position:absolute;left:-8px;top:20px;width:14px;height:14px;border-radius:50%;background:var(--gradient);border:3px solid var(--card);box-shadow:0 0 0 2px var(--border)}
+body.en .lecture-card::before{left:auto;right:-8px}
+.lecture-card:hover{border-color:var(--primary-light);box-shadow:var(--shadow)}
+.lecture-card .l-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+.lecture-card .l-header h3{font-size:14px;font-weight:700}
+.lecture-card .l-header .l-date{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+.lecture-card .l-content{font-size:13px;color:var(--text-secondary);margin-top:6px;line-height:1.6}
+
+/* ===== STREAM / POSTS ===== */
+.post-card{background:var(--card);border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow);margin-bottom:14px;transition:var(--transition);border:1px solid var(--border)}
+.post-card:hover{box-shadow:var(--shadow-lg);border-color:transparent}
+.post-card .p-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.post-card .p-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.post-card .p-info{flex:1}
+.post-card .p-name{font-weight:700;font-size:13px}
+.post-card .p-role{font-size:11px;color:var(--text-muted)}
+.post-card .p-badge{font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700;margin-right:8px}
+.p-badge.announcement{background:rgba(99,102,241,.1);color:var(--primary)}
+.p-badge.question{background:var(--warning-soft);color:var(--warning)}
+.p-badge.general{background:var(--success-soft);color:var(--success)}
+.post-card .p-content{font-size:14px;line-height:1.7;margin-bottom:12px;color:var(--text)}
+.post-card .p-actions{display:flex;gap:12px;padding-top:10px;border-top:1px solid var(--border)}
+.post-card .p-actions button{background:none;border:none;cursor:pointer;font-size:12px;color:var(--text-muted);padding:6px 10px;border-radius:8px;transition:var(--transition);display:flex;align-items:center;gap:4px;font-family:inherit;font-weight:500}
+.post-card .p-actions button:hover{color:var(--primary);background:rgba(99,102,241,.06)}
+.post-card .comments{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.post-card .comment{display:flex;gap:10px;margin-bottom:10px;font-size:13px}
+.post-card .comment .c-avatar{width:30px;height:30px;border-radius:50%;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;color:var(--text-muted)}
+.post-card .comment .c-body{background:var(--bg-alt);padding:8px 14px;border-radius:14px;flex:1}
+.post-card .comment .c-body strong{font-size:11px}
+.post-card .comment .c-body p{font-size:12px;margin-top:3px;color:var(--text)}
+.post-card .comment-input{display:flex;gap:8px;margin-top:10px}
+.post-card .comment-input input{flex:1;padding:9px 14px;border:1px solid var(--border);border-radius:20px;font-size:13px;font-family:inherit;outline:none;background:var(--bg-alt);transition:var(--transition)}
+.post-card .comment-input input:focus{border-color:var(--primary);background:var(--card);box-shadow:0 0 0 3px rgba(99,102,241,.08)}
+
+/* ===== ATTENDANCE ===== */
+.attendance-qr{text-align:center;padding:24px;background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);margin-bottom:16px;border:1px solid var(--border);position:relative}
+.attendance-qr .qr-label{font-size:13px;color:var(--text-muted);margin-bottom:12px}
+.attendance-qr .qr-timer{font-size:11px;color:var(--text-secondary);margin-top:8px;font-weight:600}
+.attendance-qr .qr-timer span{color:var(--primary);font-weight:700}
+.attendance-qr img{width:180px;height:180px;border-radius:8px;background:#fff;padding:8px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.attendance-qr .qr-refresh{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.attendance-controls{display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.attendance-list{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden}
+.attendance-list .al-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.attendance-list .al-header h3{font-size:14px;font-weight:700}
+.attendance-list .al-header .al-count{font-size:12px;color:var(--text-muted)}
+.attendance-list .al-student{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);transition:var(--transition)}
+.attendance-list .al-student:last-child{border-bottom:none}
+.attendance-list .al-student:hover{background:rgba(99,102,241,.02)}
+.attendance-list .al-student .al-avatar{width:30px;height:30px;border-radius:50%;background:var(--success-soft);color:var(--success);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.attendance-list .al-student .al-info{flex:1}
+.attendance-list .al-student .al-info .al-name{font-weight:600;font-size:13px}
+.attendance-list .al-student .al-info .al-time{font-size:11px;color:var(--text-muted)}
+.attendance-scan-btn{text-align:center;padding:40px 20px}
+.attendance-scan-btn .scan-icon{width:80px;height:80px;border-radius:50%;background:var(--gradient);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px;box-shadow:0 8px 32px rgba(99,102,241,.3);animation:scanPulse 2s ease-in-out infinite;cursor:pointer;transition:var(--transition)}
+.attendance-scan-btn .scan-icon:hover{transform:scale(1.05)}
+@keyframes scanPulse{0%,100%{box-shadow:0 8px 32px rgba(99,102,241,.3)}50%{box-shadow:0 8px 48px rgba(99,102,241,.5)}}
+.qr-scanner-container{width:100%;max-width:280px;margin:0 auto 12px;border-radius:12px;overflow:hidden;background:#000;position:relative}
+.qr-scanner-container video{width:100%;display:block;border-radius:12px}
+.qr-scanner-container .scanner-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.qr-scanner-container .scanner-overlay .scan-frame{width:180px;height:180px;border:3px solid rgba(255,255,255,.6);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.3);animation:scanFrame 2s ease-in-out infinite}
+@keyframes scanFrame{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.scan-toggle-btn{display:flex;align-items:center;gap:6px;justify-content:center;padding:8px 16px;background:var(--bg-alt);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--text-secondary);transition:var(--transition);margin-bottom:10px;width:100%}
+.scan-toggle-btn:hover{background:rgba(99,102,241,.06);border-color:var(--primary);color:var(--primary)}
+
+.attendance-history{margin-top:16px}
+.attendance-history .ah-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--card);border-radius:var(--radius-sm);margin-bottom:6px;border:1px solid var(--border)}
+.attendance-history .ah-item .ah-date{font-size:13px;font-weight:600;flex:1}
+.attendance-history .ah-item .ah-status{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+.ah-status.present{background:var(--success-soft);color:var(--success)}
+.ah-status.absent{background:var(--danger-soft);color:var(--danger)}
+
+/* ===== ASSIGNMENTS ===== */
+.assignment-card{background:var(--card);border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow);margin-bottom:12px;transition:var(--transition);border:1px solid var(--border);position:relative;overflow:hidden}
+.assignment-card::before{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:var(--gradient)}
+body.en .assignment-card::before{right:auto;left:0}
+.assignment-card:hover{border-color:transparent;box-shadow:var(--shadow-lg);transform:translateY(-2px)}
+.assignment-card .a-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}
+.assignment-card .a-header h3{font-size:15px;font-weight:700}
+.assignment-card .a-header .a-date{font-size:11px;color:var(--text-muted);display:flex;align-items:center;gap:4px;background:var(--bg-alt);padding:3px 8px;border-radius:5px}
+.assignment-card .a-desc{font-size:13px;color:var(--text-secondary);margin-bottom:10px;line-height:1.6}
+.assignment-card .a-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px}
+.assignment-card .a-meta .tag{background:var(--bg-alt);padding:4px 10px;border-radius:6px;font-weight:500}
+.assignment-card .a-status{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700}
+.a-status.open{background:var(--success-soft);color:var(--success)}
+.a-status.closed{background:var(--danger-soft);color:var(--danger)}
+.a-status.submitted{background:rgba(99,102,241,.1);color:var(--primary)}
+.a-status.graded{background:var(--warning-soft);color:var(--warning)}
+
+/* ===== SUBMISSIONS TABLE ===== */
+.submissions-table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.submissions-table th{background:var(--bg-alt);font-weight:700;font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;padding:12px 14px;text-align:right;border-bottom:1px solid var(--border)}
+.submissions-table td{padding:12px 14px;font-size:13px;border-bottom:1px solid var(--border);text-align:right}
+.submissions-table tr:last-child td{border-bottom:none}
+.submissions-table tr:hover td{background:rgba(99,102,241,.02)}
+.submissions-table .grade-input{width:65px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:13px;text-align:center;outline:none;transition:var(--transition);background:var(--bg-alt)}
+.submissions-table .grade-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1);background:var(--card)}
+.submissions-table .comment-input{width:140px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:12px;outline:none;transition:var(--transition);background:var(--bg-alt)}
+.submissions-table .comment-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1);background:var(--card)}
+
+/* ===== MODAL ===== */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(12px);z-index:500;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:var(--radius-lg);padding:32px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-xl);animation:modalIn .35s ease;border:1px solid rgba(255,255,255,.5)}
+.modal h2{font-size:20px;margin-bottom:2px}
+.modal .modal-sub{color:var(--text-secondary);font-size:13px;margin-bottom:18px}
+.modal .form-group{margin-bottom:16px}
+.modal .form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:4px;color:var(--text-secondary)}
+.modal .form-group input,.modal .form-group textarea,.modal .form-group select{width:100%;padding:10px 14px;border:2px solid var(--border);border-radius:var(--radius-xs);font-size:13px;font-family:inherit;outline:none;background:var(--bg-alt);transition:var(--transition);color:var(--text)}
+.modal .form-group textarea{resize:vertical;min-height:80px}
+.modal .form-group input:focus,.modal .form-group textarea:focus,.modal .form-group select:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(99,102,241,.1);background:var(--card)}
+.modal .modal-actions{display:flex;gap:10px;margin-top:22px}
+.modal .modal-actions .btn{flex:1}
+
+/* ===== NOTIFICATIONS PANEL ===== */
+.notif-panel{position:fixed;top:0;left:0;right:0;bottom:0;z-index:600;pointer-events:none}
+.notif-panel.show{pointer-events:auto}
+.notif-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}
+.notif-panel.show .notif-backdrop{opacity:1}
+.notif-sheet{position:absolute;top:0;left:0;bottom:0;width:400px;max-width:90vw;background:var(--card);box-shadow:var(--shadow-xl);transform:translateX(-100%);transition:transform .35s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column}
+body.en .notif-sheet{left:auto;right:0;transform:translateX(100%)}
+.notif-panel.show .notif-sheet{transform:translateX(0)}
+.notif-header{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border)}
+.notif-header h2{font-size:17px;font-weight:700}
+.notif-list{flex:1;overflow-y:auto;padding:8px 0}
+.notif-item{display:flex;gap:12px;padding:14px 22px;cursor:pointer;transition:var(--transition);align-items:flex-start}
+.notif-item:hover{background:rgba(99,102,241,.03)}
+.notif-item.unread{background:rgba(99,102,241,.06)}
+.notif-item .n-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.notif-item .n-icon.grade{background:var(--warning-soft)}
+.notif-item .n-icon.assignment{background:rgba(99,102,241,.1)}
+.notif-item .n-icon.post{background:var(--success-soft)}
+.notif-item .n-icon.comment{background:var(--info);color:#fff}
+.notif-item .n-body{flex:1;min-width:0}
+.notif-item .n-body .n-text{font-size:13px;line-height:1.5}
+.notif-item .n-body .n-time{font-size:10px;color:var(--text-muted);margin-top:4px}
+.notif-item .n-dot{width:8px;height:8px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:6px}
+.notif-item.read .n-dot{background:var(--border)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;padding:12px 28px;border-radius:12px;font-size:13px;font-weight:600;z-index:2000;opacity:0;transition:all .4s cubic-bezier(0.4,0,0.2,1);pointer-events:none;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted)}
+.empty-state .e-icon{font-size:48px;margin-bottom:12px;opacity:.6}
+.empty-state h3{font-size:17px;color:var(--text);margin-bottom:4px}
+.empty-state p{font-size:13px;color:var(--text-secondary)}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes modalIn{from{opacity:0;transform:scale(.95) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fadeUp .4s ease forwards;opacity:0}
+.animate-in:nth-child(2){animation-delay:.05s}
+.animate-in:nth-child(3){animation-delay:.1s}
+.animate-in:nth-child(4){animation-delay:.15s}
+.animate-in:nth-child(5){animation-delay:.2s}
+.animate-in:nth-child(6){animation-delay:.25s}
+
+/* ===== BACK BUTTON ===== */
+.back-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:8px;background:var(--bg-alt);color:var(--text-secondary);text-decoration:none;font-size:12px;font-weight:600;transition:var(--transition);border:1px solid var(--border);cursor:pointer;font-family:inherit}
+.back-btn:hover{color:var(--primary);border-color:var(--primary);background:rgba(99,102,241,.04)}
+
+/* ===== TOGGLE SIDEBAR OVERLAY ===== */
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:98;background:rgba(15,23,42,.3)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .sidebar{position:fixed;inset:0;width:300px;z-index:99;transform:translateX(100%);transition:transform .35s ease;height:100vh;border:none;box-shadow:0 0 60px rgba(0,0,0,.15);border-radius:0}
+  body.en .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-toggle{display:flex}
+  .main-content{padding:16px;padding-top:56px;max-height:none}
+  .topbar h1{font-size:20px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .course-grid{grid-template-columns:1fr}
+  .join-section{flex-direction:column;align-items:stretch}
+  .join-section .join-input{width:100%}
+  .modal{padding:24px 18px}
+  .notif-sheet{width:100%;max-width:100vw}
+  .course-tabs .tab{padding:8px 14px;font-size:12px}
+  .submissions-table{font-size:12px}
+  .submissions-table th,.submissions-table td{padding:8px 6px}
+  .login-box{padding:32px 24px}
+  .detail-header h1{font-size:20px}
+}
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .topbar-actions{gap:4px}
+  .lang-toggle button{padding:5px 8px;font-size:10px}
+  .role-selector{flex-direction:column}
+}
+</style>
+</head>
+<body><!-- ===== SPLASH ===== -->
+<div id="splash">
+  <div class="splash-logo">📚 ClassRoom<span>Pro</span></div>
+  <div class="splash-sub lang-ar">منصة التعلم الذكية</div>
+  <div class="splash-sub lang-en">Smart Learning Platform</div>
+  <div class="splash-loader"></div>
+</div>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginPage">
+  <div class="login-box">
+    <h1>📚 <span class="lang-ar">مرحباً</span><span class="lang-en">Welcome</span></h1>
+    <div class="sub lang-ar">سجل دخولك إلى المنصة</div>
+    <div class="sub lang-en">Sign in to ClassRoom</div>
+    <div class="role-selector">
+      <button class="role-btn active" data-role="teacher" onclick="selectRole('teacher')">
+        <span class="icon">👨‍🏫</span><span class="lang-ar">معلّم</span><span class="lang-en">Teacher</span>
+      </button>
+      <button class="role-btn" data-role="student" onclick="selectRole('student')">
+        <span class="icon">👩‍🎓</span><span class="lang-ar">طالب</span><span class="lang-en">Student</span>
+      </button>
+    </div>
+    <div class="input-group">
+      <label>Email</label>
+      <input type="email" id="emailInput" value="user@classroom.com">
+    </div>
+    <div class="input-group">
+      <label class="lang-ar">كلمة المرور</label><label class="lang-en">Password</label>
+      <input type="password" id="passInput" value="123456">
+    </div>
+    <button class="btn btn-primary btn-block" onclick="login()" style="width:100%"><span class="lang-ar">تسجيل الدخول</span><span class="lang-en">Sign In</span></button>
+  </div>
+</div>
+
+<!-- ===== APPS SCRIPT CODE TEMPLATE ===== -->
+<script type="text/plain" id="gsCodeTemplate">function doGet(e){
+  var code=e?.parameter?.code||"";
+  var course=e?.parameter?.course||"";
+  var name=e?.parameter?.name||"";
+  var group=e?.parameter?.group||"";
+  var period=e?.parameter?.period||"";
+  // If name present, save directly
+  if(name&&code){
+    var ss=SpreadsheetApp.getActiveSpreadsheet();
+    var sheet=ss.getActiveSheet()||ss.getSheetByName("Sheet1")||ss.insertSheet("Attendance");
+    sheet.appendRow([new Date(),code,course,name,group,period]);
+    return HtmlService.createHtmlOutput('&lt;h2 style="color:green;font-family:sans-serif"&gt;✅ Attendance recorded!&lt;/h2&gt;&lt;p style="font-family:sans-serif"&gt;You can close this tab.&lt;/p&gt;');
+  }
+  // Show form
+  return HtmlService.createHtmlOutput(
+    '&lt;!DOCTYPE html&gt;&lt;html dir="rtl"&gt;&lt;head&gt;&lt;meta charset="UTF-8"&gt;&lt;meta name="viewport" content="width=device-width,initial-scale=1"&gt;&lt;style&gt;'
+    +'body{font-family:sans-serif;background:#f0f4ff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:16px;direction:rtl}'
+    +'.card{background:white;border-radius:16px;padding:32px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.1);width:100%;max-width:400px;text-align:center}'
+    +'h2{margin:0 0 8px;color:#1e293b;font-size:20px}p{color:#64748b;font-size:14px;margin:0 0 20px}'
+    +'input{width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none}'
+    +'input:focus{border-color:#4f46e5}'
+    +'button{width:100%;padding:12px;background:#4f46e5;color:white;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer}'
+    +'button:hover{background:#4338ca}'
+    +'.fld{text-align:right;font-size:13px;font-weight:600;color:#334155;margin-bottom:4px}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;'
+    +'&lt;div class="card"&gt;'
+    +'&lt;h2&gt;📝 تسجيل الحضور&lt;/h2&gt;'
+    +'&lt;p&gt;أدخل بياناتك لتسجيل الحضور&lt;/p&gt;'
+    +'&lt;form action="'+ScriptApp.getService().getUrl()+'" method="get"&gt;'
+    +'&lt;div class="fld"&gt;👤 الاسم&lt;/div&gt;&lt;input name="name" placeholder="الاسم الكامل" required&gt;'
+    +'&lt;div class="fld"&gt;🔑 الرقم الجامعي&lt;/div&gt;&lt;input name="code" value="" placeholder="أدخل رقمك الجامعي" style="text-align:center;font-weight:700;letter-spacing:3px"&gt;'
+    +'&lt;input name="course" type="hidden" value="'+course+'"&gt;'
+    +'&lt;div class="fld"&gt;👥 المجموعة&lt;/div&gt;&lt;input name="group" placeholder="A / B / C"&gt;'
+    +'&lt;div class="fld"&gt;⏰ الفترة&lt;/div&gt;'
+    +'&lt;select name="period" style="width:100%;padding:12px 14px;border:2px solid #e2e8f0;border-radius:10px;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none"&gt;'
+    +'&lt;option value=""&gt;—&lt;/option&gt;&lt;option&gt;الأولى&lt;/option&gt;&lt;option&gt;الثانية&lt;/option&gt;&lt;option&gt;الثالثة&lt;/option&gt;&lt;option&gt;الرابعة&lt;/option&gt;'
+    +'&lt;/select&gt;'
+    +'&lt;br&gt;&lt;button type="submit"&gt;✅ تسجيل الحضور&lt;/button&gt;'
+    +'&lt;/form&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;'
+  );
+}</script>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalContent"></div></div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== NOTIFICATIONS PANEL ===== -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-backdrop" onclick="closeNotifPanel()"></div>
+  <div class="notif-sheet">
+    <div class="notif-header">
+      <h2><span class="lang-ar">🔔 الإشعارات</span><span class="lang-en">🔔 Notifications</span></h2>
+      <div class="topbar-actions">
+        <button class="btn btn-xs btn-ghost" onclick="markAllRead()"><span class="lang-ar">تحديد الكل مقروء</span><span class="lang-en">Mark all read</span></button>
+        <button class="btn-icon" style="width:32px;height:32px;font-size:14px" onclick="closeNotifPanel()">✕</button>
+      </div>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+</div>
+
+<!-- ===== SIDEBAR OVERLAY ===== -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ===== APP ===== -->
+<div id="app">
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo" onclick="showDashboard()">📚 ClassRoom <span class="badge">PRO</span></div>
+    <nav id="navMenu"></nav>
+    <div class="sidebar-footer">
+      <div class="avatar" id="userAvatar">ن</div>
+      <div class="info">
+        <div class="name" id="userName">نورة</div>
+        <div class="role" id="userRole">طالب</div>
+      </div>
+      <button class="btn-icon" onclick="logout()" title="Logout">🚪</button>
+      <button class="btn-icon" onclick="openSettings()" title="Settings">⚙️</button>
+    </div>
+  </aside>
+  <main class="main-content" id="mainContent"></main>
+</div>
+<script>
+// ================================================================
+// DATA LAYER
+// ================================================================
+const DB = {
+  _courses:[],_lectures:[],_enrollments:[],_posts:[],_assignments:[],_submissions:[],_notifications:[],_attendance:[],
+  _nCid:1,_nLid:1,_nPid:1,_nAid:1,_nSid:1,_nNid:1,_nAtid:1,
+  get courses(){return this._courses},
+  get lectures(){return this._lectures},
+  get enrollments(){return this._enrollments},
+  get posts(){return this._posts},
+  get assignments(){return this._assignments},
+  get submissions(){return this._submissions},
+  get notifications(){return this._notifications},
+  get attendance(){return this._attendance},
+
+  addCourse(c){c.id=this._nCid++;c.code=genCode();this._courses.push(c);return c},
+  getCourse(id){return this._courses.find(c=>c.id===id)},
+  getCourseByCode(c){return this._courses.find(x=>x.code===c.toUpperCase())},
+
+  addLecture(l){l.id=this._nLid++;l.date=today();this._lectures.push(l);return l},
+  getLectures(cid){return this._lectures.filter(l=>l.courseId===cid)},
+
+  enroll(sn,cid){if(this._enrollments.find(e=>e.studentName===sn&&e.courseId===cid))return false;this._enrollments.push({studentName:sn,courseId:cid});return true},
+  getEnrollments(cid){return this._enrollments.filter(e=>e.courseId===cid)},
+  getStudentCourses(sn){return this._courses.filter(c=>this._enrollments.some(e=>e.studentName===sn&&e.courseId===c.id))},
+  getStudents(cid){return this._enrollments.filter(e=>e.courseId===cid).map(e=>e.studentName)},
+
+  addPost(p){p.id=this._nPid++;p.date=today();p.time=new Date().toLocaleTimeString();p.comments=p.comments||[];this._posts.push(p);return p},
+  getPosts(cid){return this._posts.filter(p=>p.courseId===cid).sort((a,b)=>b.id-a.id)},
+
+  addAssignment(a){a.id=this._nAid++;a.createdAt=today();this._assignments.push(a);return a},
+  getAssignments(cid){return this._assignments.filter(a=>a.courseId===cid).sort((a,b)=>b.id-a.id)},
+  getAssignment(id){return this._assignments.find(a=>a.id===id)},
+
+  addSubmission(s){s.id=this._nSid++;s.submittedAt=today();s.grade=null;s.comment='';s.graded=false;this._submissions.push(s);return s},
+  getSubmissions(aid){return this._submissions.filter(s=>s.assignmentId===aid)},
+  getMySubmission(aid,sn){return this._submissions.find(s=>s.assignmentId===aid&&s.studentName===sn)},
+
+  addNotif(n){n.id=this._nNid++;n.date=today();n.read=false;this._notifications.push(n);return n},
+  getNotifs(sn){return this._notifications.filter(n=>n.user===sn).sort((a,b)=>b.id-a.id)},
+  unreadCount(sn){return this._notifications.filter(n=>n.user===sn&&!n.read).length},
+
+  getStudentCount(cid){return this._enrollments.filter(e=>e.courseId===cid).length},
+
+  // Attendance
+  startAttendance(cid){
+    const s={id:this._nAtid++,courseId:cid,date:today(),startTime:new Date().toLocaleTimeString(),active:true,records:[],qrCode:''};
+    this._attendance.push(s);
+    return s;
+  },
+  getActiveSession(cid){return this._attendance.find(a=>a.courseId===cid&&a.active)},
+  endAttendance(id){const s=this._attendance.find(a=>a.id===id);if(s){s.active=false;s.endTime=new Date().toLocaleTimeString()}return s},
+  markAttendance(cid,code,sn,loc,grp,prd){
+    let s=this.getActiveSession(cid);
+    if(!s){
+      s={id:this._nAtid++,courseId:cid,date:today(),startTime:new Date().toLocaleTimeString(),active:true,records:[],qrCode:''};
+      this._attendance.push(s);
+    }
+    var record={studentName:sn,time:new Date().toLocaleTimeString()};
+    if(code){record.studentCode=code;}
+    if(loc){record.location=loc;}
+    if(grp){record.group=grp;}
+    if(prd){record.period=prd;}
+    s.records.push(record);
+    return true;
+  },
+  getAttendanceForCourse(cid){return this._attendance.filter(a=>a.courseId===cid).sort((a,b)=>b.id-a.id)},
+  getStudentAttendance(cid,sn){return this._attendance.filter(a=>a.courseId===cid&&a.records.some(r=>r.studentName===sn)).length},
+};
+
+function genCode(){let c='';const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';for(let i=0;i<6;i++)c+=ch[Math.floor(Math.random()*ch.length)];return DB._courses.find(x=>x.code===c)?genCode():c}
+function today(){return new Date().toISOString().split('T')[0]}
+
+// Seed
+(function(){
+  const c1=DB.addCourse({title:'رياضيات متقدمة',titleEn:'Advanced Math',desc:'Calculus, Linear Algebra & Differential Equations',descEn:'Calculus, Linear Algebra & Differential Equations',teacher:'أ. أحمد',teacherEn:'Prof. Ahmed',color:'#4f46e5'});
+  const c2=DB.addCourse({title:'علوم الحاسب',titleEn:'Computer Science',desc:'Data Structures, Algorithms & OOP',descEn:'Data Structures, Algorithms & OOP',teacher:'أ. سارة',teacherEn:'Prof. Sara',color:'#10b981'});
+  const c3=DB.addCourse({title:'التصميم الرقمي',titleEn:'Digital Design',desc:'UI/UX, Graphic Design & Prototyping',descEn:'UI/UX, Graphic Design & Prototyping',teacher:'أ. خالد',teacherEn:'Prof. Khaled',color:'#f59e0b'});
+  DB.addLecture({courseId:c1.id,title:'المشتقات الجزئية',titleEn:'Partial Derivatives',content:'شرح المشتقات الجزئية وتطبيقاتها',contentEn:'Partial derivatives and applications'});
+  DB.addLecture({courseId:c1.id,title:'تفاضل المتجهات',titleEn:'Vector Calculus',content:'نظرية غرين وستوكس',contentEn:'Green, Stokes theorems'});
+  DB.addLecture({courseId:c2.id,title:'Tree Data Structures',titleEn:'Tree Data Structures',content:'Binary trees, BST, AVL',contentEn:'Binary trees, BST, AVL'});
+  DB.addPost({courseId:c1.id,author:'أ. أحمد',authorEn:'Prof. Ahmed',role:'teacher',roleEn:'Teacher',content:'مرحباً بالجميع! هذا الأسبوع سنبدأ بالمشتقات الجزئية. يرجى مراجعة الدروس السابقة.',contentEn:'Welcome everyone! This week we start partial derivatives. Please review previous lessons.',type:'announcement',avatar:'أ'});
+  DB.addPost({courseId:c1.id,author:'نورة أحمد',authorEn:'Noura Ahmed',role:'student',roleEn:'Student',content:'دكتور، هل فيه امتحان الأسبوع القادم؟',contentEn:'Professor, is there an exam next week?',type:'question',avatar:'ن'});
+  DB.addPost({courseId:c1.id,author:'أ. أحمد',authorEn:'Prof. Ahmed',role:'teacher',roleEn:'Teacher',content:'نعم، سيكون هناك كويز قصير يوم الأحد',contentEn:'Yes, there will be a short quiz on Sunday',type:'announcement',avatar:'أ'});
+  DB.enroll('نورة أحمد',c1.id);DB.enroll('نورة أحمد',c2.id);
+  DB.enroll('سعيد علي',c1.id);DB.enroll('سعيد علي',c2.id);DB.enroll('سعيد علي',c3.id);
+  DB.enroll('مريم حسن',c1.id);DB.enroll('خالد عمر',c1.id);DB.enroll('خالد عمر',c2.id);
+
+  // Seed assignments for demo
+  const a1=DB.addAssignment({courseId:c1.id,title:'تمارين التفاضل',titleEn:'Differentiation Exercises',desc:'حل المسائل 1-10 من الكتاب',descEn:'Solve problems 1-10 from the book',dueDate:'2026-06-28'});
+  const a2=DB.addAssignment({courseId:c1.id,title:'مشروع التكامل',titleEn:'Integration Project',desc:'تطبيق عملي على التكامل العددي',descEn:'Practical application of numerical integration',dueDate:'2026-07-05'});
+  DB.addSubmission({assignmentId:a1.id,studentName:'نورة أحمد',file:'solution_noura.pdf',content:'تم حل جميع المسائل'});
+  DB.addSubmission({assignmentId:a2.id,studentName:'نورة أحمد',file:'project_noura.pdf',content:'المشروع جاهز'});
+  // Grade one submission
+  const sub=DB._submissions.find(s=>s.assignmentId===a1.id&&s.studentName==='نورة أحمد');
+  if(sub){sub.grade=85;sub.comment='أحسنت! حل ممتاز';sub.graded=true}
+  // Seed notif
+  DB.addNotif({user:'نورة أحمد',type:'grade',message:'تم تصحيح واجب "تمارين التفاضل" - الدرجة: 85',messageEn:'Assignment "Differentiation Exercises" graded - Score: 85',link:null});
+  DB.addNotif({user:'نورة أحمد',type:'assignment',message:'تم نشر واجب جديد: مشروع التكامل',messageEn:'New assignment posted: Integration Project',link:null});
+})();
+
+// ================================================================
+// STATE
+// ================================================================
+let U=null, // user
+    L=localStorage.getItem('classroom_lang')||'ar',
+    pg='dashboard',
+    cid=null, // current course id
+    tab='lectures'; // current course tab
+
+// ================================================================
+// LANG
+// ================================================================
+function setLang(l){
+  L=l;const b=document.body,html=document.documentElement;
+  if(l==='en'){b.classList.add('en');html.lang='en';html.dir='ltr'}else{b.classList.remove('en');html.lang='ar';html.dir='rtl'}
+  localStorage.setItem('classroom_lang',l);
+  document.querySelectorAll('#langAr,#langEn').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('lang'+(l==='en'?'En':'Ar'));if(el)el.classList.add('active');
+  renderUserInfo();
+}
+
+// ================================================================
+// TOAST
+// ================================================================
+function toast(msg,type='success'){
+  const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ================================================================
+// NOTIFICATIONS
+// ================================================================
+function notif(user,type,msg,msgEn,link){
+  DB.addNotif({user,type,message:msg,messageEn:msgEn||msg,link});
+  renderNotifBadge();
+}
+
+function renderNotifPanel(){
+  const list=document.getElementById('notifList');
+  const notifs=DB.getNotifs(U.name);
+  if(!notifs.length){
+    list.innerHTML=`<div class="empty-state"><div class="e-icon">🔔</div><h3 class="lang-ar">لا توجد إشعارات</h3><h3 class="lang-en">No notifications</h3></div>`;
+    return;
+  }
+  list.innerHTML=notifs.map(n=>{
+    const msg=L==='en'?(n.messageEn||n.message):n.message;
+    const icons={assignment:'📝',grade:'✅',post:'💬',comment:'🗣️',system:'🔔'};
+    const icon=icons[n.type]||'🔔';
+    return `<div class="notif-item ${n.read?'read':'unread'}" onclick="markNotifRead(${n.id})">
+      <div class="n-icon" style="background:rgba(79,70,229,.08)">${icon}</div>
+      <div class="n-body"><div class="n-text">${msg}</div><div class="n-time">${n.date}</div></div>
+      <div class="n-dot"></div>
+    </div>`;
+  }).join('');
+}
+
+function renderNotifBadge(){
+  const el=document.getElementById('notifBadge');
+  const cnt=DB.unreadCount(U.name);
+  if(el){if(cnt>0){el.textContent=cnt;el.style.display='flex'}else el.style.display='none'}
+}
+
+function openNotifPanel(){
+  renderNotifPanel();document.getElementById('notifPanel').classList.add('show');
+}
+
+function closeNotifPanel(){document.getElementById('notifPanel').classList.remove('show')}
+
+function markNotifRead(id){
+  const n=DB._notifications.find(x=>x.id===id);if(n){n.read=true;renderNotifPanel();renderNotifBadge()}
+}
+
+function markAllRead(){
+  DB._notifications.forEach(n=>{if(n.user===U.name)n.read=true});
+  renderNotifPanel();renderNotifBadge();toast(L==='en'?'All marked as read':'تم تحديد الكل مقروء');
+}
+
+function closeAllModals(){document.getElementById('modalOverlay').classList.remove('show');closeNotifPanel()}
+
+// ================================================================
+// AUTH
+// ================================================================
+function selectRole(r){
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.role-btn[data-role="${r}"]`).classList.add('active');
+}
+
+function login(){
+  const rb=document.querySelector('.role-btn.active'),role=rb?rb.dataset.role:'student';
+  const data={teacher:{name:'أ. أحمد',nameEn:'Prof. Ahmed',avatar:'أ',role:'teacher'},
+              student:{name:'نورة أحمد',nameEn:'Noura Ahmed',avatar:'ن',role:'student'}};
+  U=data[role]||data.student;
+  document.getElementById('loginPage').classList.remove('show');
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').classList.add('show');
+  document.getElementById('app').style.display='flex';
+  renderSidebar();renderUserInfo();showDashboard();
+}
+
+function logout(){
+  U=null;closeAllModals();
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  setTimeout(()=>document.getElementById('loginPage').classList.add('show'),50);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('loginPage').classList.contains('show'))login();
+  if(e.key==='Escape'){closeModal();closeNotifPanel()}
+});
+
+// Splash
+setTimeout(()=>{
+  const s=document.getElementById('splash');s.classList.add('hide');
+  setTimeout(()=>{s.style.display='none';document.getElementById('loginPage').classList.add('show')},500);
+},1200);
+
+// ================================================================
+// SIDEBAR / USER
+// ================================================================
+function renderSidebar(){
+  const t=U.role==='teacher';
+  document.getElementById('navMenu').innerHTML=`
+    <div class="nav-item active" data-page="dashboard" onclick="showDashboard()"><span class="icon">📊</span><span class="lang-ar">الرئيسية</span><span class="lang-en">Dashboard</span></div>
+    <div class="nav-item" data-page="courses" onclick="showCourses()"><span class="icon">📚</span><span class="lang-ar">المقررات</span><span class="lang-en">Courses</span></div>
+    <div class="nav-item" data-page="attendance" onclick="showAttendance()"><span class="icon">✅</span><span class="lang-ar">الحضور</span><span class="lang-en">Attendance</span></div>
+  `;
+}
+
+function setActiveNav(p){
+  document.querySelectorAll('#navMenu .nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.querySelector(`#navMenu .nav-item[data-page="${p}"]`);
+  if(el)el.classList.add('active');
+}
+
+function renderUserInfo(){
+  if(!U)return;
+  document.getElementById('userName').textContent=L==='en'?U.nameEn:U.name;
+  document.getElementById('userAvatar').textContent=U.avatar;
+  const re=document.getElementById('userRole');
+  if(U.role==='teacher')re.textContent=L==='en'?'Teacher':'معلّم';else re.textContent=L==='en'?'Student':'طالب';
+}
+
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+
+// ================================================================
+// HELPERS
+// ================================================================
+function $(id){return document.getElementById(id)}
+function main(){return $('mainContent')}
+function isT(){return U&&U.role==='teacher'}
+function __(ar,en){return L==='en'?en:ar}
+
+// ================================================================
+// TOPBAR RENDER
+// ================================================================
+function renderTopbar(title,sub,extra){
+  const notifCnt=U?DB.unreadCount(U.name):0;
+  return `<div class="topbar">
+    <div><h1>${title}<small>${sub}</small></h1></div>
+    <div class="topbar-actions">
+      ${extra||''}
+      <div class="lang-toggle">
+        <button onclick="setLang('ar')" id="langAr" class="${L==='ar'?'active':''}">ع</button>
+        <button onclick="setLang('en')" id="langEn" class="${L==='en'?'active':''}">EN</button>
+      </div>
+      <button class="btn-icon" onclick="openNotifPanel()" style="position:relative">
+        🔔<span class="badge-dot" id="notifBadge" style="${notifCnt>0?'':'display:none'}">${notifCnt}</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+// ================================================================
+// PAGES
+// ================================================================
+
+// ---- DASHBOARD ----
+function showDashboard(){
+  pg='dashboard';cid=null;setActiveNav('dashboard');
+  const t=isT();
+  const greet=__(`مرحباً، ${U.name} 👋`,`Welcome, ${U.nameEn} 👋`);
+  const sub=__(t?'إدارة مقرراتك والمحاضرات':'تابع مقرراتك الدراسية',t?'Manage courses and lectures':'Track your courses');
+
+  let stats;
+  if(t){
+    const tc=DB.courses.length,tl=DB.lectures.length,ts=[...new Set(DB.enrollments.map(e=>e.studentName))].length;
+    const ta=DB._attendance.reduce(function(a,s){return a+s.records.length;},0);
+    stats=`<div class="stat-card purple animate-in"><div class="s-icon">📚</div><div class="s-value">${tc}</div><div class="s-label">${__('المقررات','Courses')}</div></div>
+           <div class="stat-card green animate-in"><div class="s-icon">📖</div><div class="s-value">${tl}</div><div class="s-label">${__('المحاضرات','Lectures')}</div></div>
+           <div class="stat-card blue animate-in"><div class="s-icon">📝</div><div class="s-value">${DB._assignments.length}</div><div class="s-label">${__('الواجبات','Assignments')}</div></div>
+           <div class="stat-card orange animate-in"><div class="s-icon">👥</div><div class="s-value">${ts}</div><div class="s-label">${__('الطلاب','Students')}</div></div>
+           <div class="stat-card pink animate-in"><div class="s-icon">✅</div><div class="s-value">${ta}</div><div class="s-label">${__('حضور','Attendance')}</div></div>`;
+  } else {
+    const enr=DB.getStudentCourses(U.name).length,sb=DB._submissions.filter(s=>s.studentName===U.name).length;
+    var sa=0;DB._attendance.forEach(function(s){if(s.records.some(function(r){return r.studentName===U.name}))sa++;});
+    stats=`<div class="stat-card purple animate-in"><div class="s-icon">📚</div><div class="s-value">${enr}</div><div class="s-label">${__('المقررات المسجلة','Enrolled')}</div></div>
+           <div class="stat-card green animate-in"><div class="s-icon">✅</div><div class="s-value">${sb}</div><div class="s-label">${__('الواجبات المسلمة','Submitted')}</div></div>
+           <div class="stat-card blue animate-in"><div class="s-icon">📖</div><div class="s-value">${DB._lectures.length}</div><div class="s-label">${__('المحاضرات','Lectures')}</div></div>
+           <div class="stat-card pink animate-in"><div class="s-icon">✅</div><div class="s-value">${sa}</div><div class="s-label">${__('جلسات حضور','Attended')}</div></div>`;
+  }
+
+  main().innerHTML=renderTopbar(greet,sub)+`
+    <div class="stats-grid">${stats}</div>
+    <div class="section-header">
+      <h2>${__('📖 المقررات','📖 Courses')}</h2>
+      <div class="actions">
+        ${t?`<button class="btn btn-sm btn-primary" onclick="openAddCourseModal()">${__('+ إضافة مقرر','+ Add Course')}</button>`
+            :`<button class="btn btn-sm btn-success" onclick="openJoinModal()">${__('+ الانضمام بكود','+ Join by Code')}</button>`}
+      </div>
+    </div>
+    <div class="course-grid" id="dashCourses"></div>
+  `;
+  renderDashCourses();
+}
+
+function renderDashCourses(){
+  const el=$('dashCourses'),cs=isT()?DB.courses:DB.getStudentCourses(U.name);
+  if(!cs.length){
+    el.innerHTML=`<div class="empty-state"><div class="e-icon">📭</div><h3>${__('لا توجد مقررات','No courses')}</h3></div>`;return;
+  }
+  el.innerHTML=cs.map(c=>{
+    const tt=__(c.title,c.titleEn),dd=__(c.desc,c.descEn),ec=DB.getStudentCount(c.id),lc=DB.getLectures(c.id).length;
+    return `<div class="course-card animate-in" onclick="openCourse(${c.id})">
+      <div class="cover" style="background:linear-gradient(135deg,${c.color},${c.color}cc)">
+        <span class="tag">${isT()?'👨‍🏫':'📖'}</span>
+      </div>
+      <div class="body">
+        <h3>${tt}</h3><p>${dd}</p>
+        ${isT()?`<div class="code-badge">${c.code}</div>`:''}
+        <div class="meta"><span>${isT()?`👥 ${ec}`:`📖 ${lc} ${__('محاضرة','lectures')}`}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ---- ATTENDANCE PAGE ----
+function showAttendance(){
+  pg='attendance';setActiveNav('attendance');
+  var t=isT();
+  if(t){
+    showCourses();
+  } else {
+    var courses=DB.getStudentCourses(U.name);
+    if(!courses.length){showCourses();return;}
+    var html='<div class="course-grid">';
+    for(var i=0;i<courses.length;i++){
+      var c=courses[i],tt=__(c.title,c.titleEn);
+      var sessions=DB.getAttendanceForCourse(c.id);
+      var pres=0;for(var j=0;j<sessions.length;j++){if(sessions[j].records.some(function(r){return r.studentName===U.name}))pres++;}
+      html+='<div class="course-card animate-in" onclick="openCourse('+c.id+')"><div class="cover" style="background:linear-gradient(135deg,'+c.color+','+c.color+'cc)"><span class="tag">✅ '+__('حضور','Attendance')+'</span></div><div class="body"><h3>'+tt+'</h3><div class="meta"><span>✅ '+pres+' / '+sessions.length+' '+__('جلسات','sessions')+'</span></div></div></div>';
+    }
+    html+='</div>';
+    main().innerHTML=renderTopbar(__('✅ الحضور','✅ Attendance'),__('سجل حضورك في المقررات','Track your attendance across courses'))+html;
+  }
+}
+
+// ---- COURSES LIST ----
+function showCourses(){
+  pg='courses';cid=null;setActiveNav('courses');
+  const t=isT();
+  main().innerHTML=renderTopbar(__(`المقررات الدراسية`,`Courses`),'',`
+    ${t?`<button class="btn btn-sm btn-primary" onclick="openAddCourseModal()">${__('+ إضافة مقرر','+ Add Course')}</button>`
+       :`<button class="btn btn-sm btn-success" onclick="openJoinModal()">${__('+ الانضمام بكود','+ Join by Code')}</button>`}
+  `)+`<div class="course-grid" id="allCourses"></div>`;
+  const el=$('allCourses'),cs=t?DB.courses:DB.getStudentCourses(U.name);
+  if(!cs.length){
+    el.innerHTML=`<div class="empty-state"><div class="e-icon">📭</div><h3>${__('لا توجد مقررات','No courses')}</h3></div>`;return;
+  }
+  el.innerHTML=cs.map(c=>{
+    const tt=__(c.title,c.titleEn),dd=__(c.desc,c.descEn),ec=DB.getStudentCount(c.id),lc=DB.getLectures(c.id).length;
+    return `<div class="course-card animate-in" onclick="openCourse(${c.id})">
+      <div class="cover" style="background:linear-gradient(135deg,${c.color},${c.color}cc)"><span class="tag">📖</span></div>
+      <div class="body">
+        <h3>${tt}</h3><p>${dd}</p>
+        ${t?`<div class="code-badge">🔑 ${c.code}</div>`:''}
+        <div class="meta"><span>${t?`👥 ${ec} ${__('طالب','students')}`:`📖 ${lc} ${__('محاضرة','lectures')}`}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ================================================================
+// COURSE DETAIL (TABS: Lectures | Stream | Assignments)
+// ================================================================
+function openCourse(courseId){
+  const c=DB.getCourse(courseId);if(!c)return;
+  cid=courseId;pg='coursedetail';tab=tab||'lectures';
+  const tt=__(c.title,c.titleEn),dd=__(c.desc,c.descEn),tc=__(c.teacher,c.teacherEn);
+  const t=isT();
+
+  main().innerHTML=`
+    <div class="course-detail">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-ghost" onclick="showDashboard()">← ${__('العودة','Back')}</button>
+        ${t?`<div style="display:flex;align-items:center;gap:8px;background:rgba(79,70,229,.08);padding:6px 14px;border-radius:8px"><span style="font-size:12px;color:var(--text-muted)">${__('🔑 كود الانضمام:','🔑 Join Code:')}</span><span style="font-family:monospace;font-weight:900;font-size:18px;letter-spacing:2px;color:var(--primary)">${c.code}</span><button class="btn btn-xs btn-outline" onclick="copy('${c.code}')">${__('نسخ','Copy')}</button></div>`:''}
+      </div>
+      <div class="detail-header" style="background:var(--card);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);margin-bottom:16px">
+        <h1 style="font-size:22px;font-weight:900">${tt}</h1>
+        <p style="color:var(--text-muted);font-size:13px;margin-top:2px">${dd} · ${tc}</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--text-muted)">
+          <span>👥 ${DB.getStudentCount(c.id)} ${__('طالب','students')}</span>
+          <span>📖 ${DB.getLectures(c.id).length} ${__('محاضرة','lectures')}</span>
+          <span>📝 ${DB.getAssignments(c.id).length} ${__('واجب','assignments')}</span>
+          <span>✅ ${DB.getAttendanceForCourse(c.id).length} ${__('جلسة حضور','sessions')}</span>
+        </div>
+      </div>
+
+      <div class="course-tabs">
+        <button class="tab ${tab==='lectures'?'active':''}" onclick="switchTab('lectures')">📖 ${__('المحاضرات','Lectures')}</button>
+        <button class="tab ${tab==='stream'?'active':''}" onclick="switchTab('stream')">💬 ${__('المنشورات','Stream')}</button>
+        <button class="tab ${tab==='assignments'?'active':''}" onclick="switchTab('assignments')">📝 ${__('الواجبات','Assignments')}</button>
+        <button class="tab ${tab==='attendance'?'active':''}" onclick="switchTab('attendance')">✅ ${__('الحضور','Attendance')}</button>
+      </div>
+      <div class="tab-content ${tab==='lectures'?'active':''}" id="tabLectures"></div>
+      <div class="tab-content ${tab==='stream'?'active':''}" id="tabStream"></div>
+      <div class="tab-content ${tab==='assignments'?'active':''}" id="tabAssignments"></div>
+      <div class="tab-content ${tab==='attendance'?'active':''}" id="tabAttendance"></div>
+    </div>
+  `;
+  renderTabLectures(c);renderTabStream(c);renderTabAssignments(c);renderTabAttendance(c);
+}
+
+function switchTab(t){tab=t;if(cid)openCourse(cid)}
+
+// ---- TAB: LECTURES ----
+function renderTabLectures(c){
+  const el=$('tabLectures');if(!el)return;
+  const ls=DB.getLectures(c.id),t=isT();
+  el.innerHTML=`<div class="lecture-list">${ls.map(l=>{
+    const lt=__(l.title,l.titleEn),lc=__(l.content,l.contentEn);
+    return `<div class="lecture-card animate-in" style="background:var(--card);border-radius:var(--radius-sm);padding:14px 18px;box-shadow:var(--shadow);margin-bottom:8px;border-right:3px solid ${c.color}">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+        <h3 style="font-size:14px;font-weight:700">${lt}</h3>
+        <span style="font-size:10px;color:var(--text-muted)">${l.date}</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-muted);margin-top:4px;line-height:1.5">${lc}</p>
+      ${t?`<div style="margin-top:8px"><button class="btn btn-xs btn-outline" onclick="deleteLecture(${l.id})">🗑 ${__('حذف','Delete')}</button></div>`:''}
+    </div>`;
+  }).join('')}</div>`;
+  if(!ls.length)el.innerHTML=`<div class="empty-state"><div class="e-icon">📝</div><h3>${__('لا توجد محاضرات بعد','No lectures yet')}</h3></div>`;
+  // Inject "Add Lecture" button on top for teachers
+  if(t){
+    el.innerHTML=`<div style="margin-bottom:10px"><button class="btn btn-sm btn-primary" onclick="openAddLectureModal(${c.id})">${__('+ إضافة محاضرة','+ Add Lecture')}</button></div>`+el.innerHTML;
+  }
+}
+
+// ---- TAB: STREAM ----
+function renderTabStream(c){
+  const el=$('tabStream');if(!el)return;
+  const ps=DB.getPosts(c.id);
+  const colors={teacher:[c.color,'#fff'],student:['var(--bg)','var(--text)']};
+  el.innerHTML=`<div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openCreatePostModal(${c.id})">${__('+ إضافة منشور','+ New Post')}</button></div>
+  <div class="post-list">${ps.map(p=>{
+    const pa=__(p.author,p.authorEn),pc=__(p.content,p.contentEn),pr=__(p.role,p.roleEn);
+    const ptype=p.type||'general';
+    const labels={announcement:__('📢 إعلان','📢 Announcement'),question:__('❓ سؤال','❓ Question'),general:__('💬 عام','💬 General')};
+    const cls={announcement:'announcement',question:'question',general:'general'};
+    return `<div class="post-card animate-in">
+      <div class="p-header">
+        <div class="p-avatar" style="background:${isT()?c.color:''};color:${isT()?'#fff':''}">${p.avatar}</div>
+        <div class="p-info">
+          <div class="p-name">${pa} <span class="p-badge ${cls[ptype]}">${labels[ptype]||labels.general}</span></div>
+          <div class="p-role">${pr} · ${p.date} ${p.time||''}</div>
+        </div>
+      </div>
+      <div class="p-content">${pc}</div>
+      <div class="p-actions">
+        <button onclick="toggleComments(${p.id})">💬 ${p.comments.length} ${__('تعليق','comments')}</button>
+      </div>
+      <div class="comments" id="comments-${p.id}" style="display:none">
+        ${p.comments.map(cm=>{
+          const ca=__(cm.author,cm.authorEn),cc=__(cm.content,cm.contentEn);
+          return `<div class="comment"><div class="c-avatar">${cm.avatar||'👤'}</div><div class="c-body"><strong>${ca}</strong><p>${cc}</p></div></div>`;
+        }).join('')}
+        <div class="comment-input">
+          <input id="commentInput-${p.id}" placeholder="${__('اكتب تعليقاً...','Write a comment...')}" onkeypress="if(event.key==='Enter')addComment(${p.id},${c.id})">
+          <button class="btn btn-xs btn-primary" onclick="addComment(${p.id},${c.id})">${__('إرسال','Send')}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+  if(!ps.length)el.innerHTML=`<div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openCreatePostModal(${c.id})">${__('+ إضافة منشور','+ New Post')}</button></div><div class="empty-state"><div class="e-icon">💬</div><h3>${__('لا توجد منشورات بعد','No posts yet')}</h3><p>${__('كن أول من يشارك!','Be the first to share!')}</p></div>`;
+}
+
+function toggleComments(postId){
+  const el=$('comments-'+postId);if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function addComment(postId,courseId){
+  const inp=$('commentInput-'+postId);if(!inp||!inp.value.trim())return;
+  const p=DB._posts.find(x=>x.id===postId);if(!p)return;
+  p.comments.push({author:U.name,authorEn:U.nameEn,content:inp.value.trim(),contentEn:inp.value.trim(),avatar:U.avatar});
+  inp.value='';renderTabStream(DB.getCourse(courseId));
+  // Notify course students (simplified)
+  DB.getStudents(courseId).forEach(s=>{
+    if(s!==U.name)notif(s,'comment',`${U.name} علّق على منشور`,`${U.nameEn} commented on a post`);
+  });
+}
+
+// ---- TAB: ASSIGNMENTS ----
+function renderTabAssignments(c){
+  var el,as,t,now,html,i,a,at,ad,due,closed,subs,subCount,mySub,sc;
+  el=$('tabAssignments');if(!el)return;
+  as=DB.getAssignments(c.id);t=isT();now=new Date();html='';
+  if(t)html='<div style="margin-bottom:12px"><button class="btn btn-sm btn-primary" onclick="openCreateAssignmentModal('+c.id+')">'+(L==='en'?'+ Add Assignment':'+ إضافة واجب')+'</button></div>';
+  if(!as.length){html+='<div class="empty-state"><div class="e-icon">📝</div><h3>'+(L==='en'?'No assignments yet':'لا توجد واجبات بعد')+'</h3></div>';el.innerHTML=html;return;}
+  for(i=0;i<as.length;i++){
+    a=as[i];at=__(a.title,a.titleEn);ad=__(a.desc,a.descEn);
+    due=new Date(a.dueDate+'T23:59:59');closed=due<now;
+    subs=t?DB.getSubmissions(a.id):null;subCount=subs?subs.length:0;mySub=t?null:DB.getMySubmission(a.id,U.name);
+    sc='';
+    if(t)sc='<span>👥 '+subCount+' '+(L==='en'?'submissions':'تسليم')+'</span>';
+    else if(mySub)sc='<span class="a-status '+(mySub.graded?'graded':'submitted')+'">'+(mySub.graded?(L==='en'?'Graded: ':'تم التصحيح - الدرجة: ')+mySub.grade:(L==='en'?'Submitted':'تم التسليم'))+'</span>';
+    else sc='<span class="a-status '+(closed?'closed':'open')+'">'+(closed?(L==='en'?'Closed':'مغلقة'):(L==='en'?'Open':'مفتوحة'))+'</span>';
+    var actions='';
+    if(t)actions='<div style="margin-top:10px"><button class="btn btn-sm btn-primary" onclick="openSubmissionsModal('+a.id+')">'+(L==='en'?'View Submissions':'عرض التسليمات')+' ('+subCount+')</button></div>';
+    else if(!closed)actions='<div style="margin-top:10px"><button class="btn btn-sm btn-success" onclick="openSubmitModal('+a.id+')">'+(mySub?(L==='en'?'Edit Submission':'تعديل التسليم'):(L==='en'?'Submit':'تسليم الواجب'))+'</button></div>';
+    else if(mySub)actions='<div style="margin-top:8px;font-size:13px">'+(mySub.graded?'📊 '+(L==='en'?'Grade: ':'الدرجة: ')+'<strong>'+mySub.grade+'</strong> · '+mySub.comment:(L==='en'?'Waiting for grading':'بإنتظار التصحيح'))+'</div>';
+    html+='<div class="assignment-card animate-in"><div class="a-header"><h3>'+at+'</h3><span class="a-date">📅 '+a.dueDate+' '+(closed?(L==='en'?'(Closed)':'(مغلقة)'):(L==='en'?'(Open)':'(مفتوحة)'))+'</span></div><div class="a-desc">'+ad+'</div><div class="a-meta"><span class="tag">📎 '+(a.file||(L==='en'?'No file':'بدون ملف'))+'</span>'+sc+'</div>'+actions+'</div>';
+  }
+  el.innerHTML=html;
+}
+
+// ---- TAB: ATTENDANCE ----
+var attendanceTimer=null,attendanceCode='';
+function renderTabAttendance(c){
+  var el=$('tabAttendance');if(!el)return;
+  var t=isT(),html,a;
+  if(t){
+    var activeSession=DB.getActiveSession(c.id);
+    if(activeSession){
+      var now=new Date(),secs=now.getSeconds();
+      if(secs%5===0||!attendanceCode){
+        attendanceCode=genCode()+genCode();
+        activeSession.qrCode=attendanceCode;
+      }
+      var gsUrl=getGSUrl();
+      var qrData=gsUrl?gsUrl+'?code='+encodeURIComponent(attendanceCode)+'&course='+encodeURIComponent(c.title+(c.titleEn?' ('+c.titleEn+')':'')):attendanceCode;
+      var qrUrl='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(qrData);
+      var count=activeSession.records.length;
+      if(count>lastAttendCount){playNotifSound();lastAttendCount=count;}
+      html='<div class="attendance-controls">'
+        +'<button class="btn btn-sm btn-danger" onclick="endAttendanceSession('+c.id+')">⏹ '+__('إنهاء الجلسة','End Session')+'</button>'
+        +'<button class="btn btn-sm btn-primary" onclick="downloadAttendanceExcel('+c.id+')">📥 '+__('تحميل Excel','Download Excel')+'</button>'
+        +'</div>'
+        +'<div class="attendance-qr">'
+        +'<div class="qr-label">'+__('امسح QR بكاميرا الجوال لتسجيل الحضور','Scan QR with your phone camera for attendance')+'</div>'
+        +(gsUrl?'<div style="font-size:10px;color:var(--text-muted);margin:2px 0 6px;word-break:break-all;padding:0 10px">🔗 '+qrData.substring(0,80)+'...</div>':'')
+        +'<img src="'+qrUrl+'" alt="QR Code" id="qrImg">'
+        +'<div class="qr-timer">'+__('يتجدد تلقائياً كل ٥ ثوانٍ','Auto-refreshes every 5s')+' <span class="qr-refresh">⟳</span></div>'
+        +'</div>'
+        +'<div class="attendance-list">'
+        +'<div class="al-header"><h3>'+__('الحضور','Attended Students')+'</h3><span class="al-count">'+count+' '+__('حضر','present')+'</span></div>';
+      if(count){
+        for(a=0;a<activeSession.records.length;a++){
+          var r=activeSession.records[a];
+          var locInfo=r.location?'<div style="font-size:10px;color:var(--text-muted);margin-top:2px">📍 '+r.location.address.substring(0,40)+(r.location.address.length>40?'...':'')+'</div>':'';
+          var grpInfo=r.group?' · '+r.group:'';
+          var prdInfo=r.period?' · '+r.period:'';
+          var cdInfo=r.studentCode?' 🔑 '+r.studentCode:'';
+          html+='<div class="al-student"><div class="al-avatar">✓</div><div class="al-info"><div class="al-name">'+r.studentName+cdInfo+'</div><div class="al-time">'+r.time+grpInfo+prdInfo+'</div>'+locInfo+'</div></div>';
+        }
+      } else {
+        html+='<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px">'+__('بانتظار الطلاب...','Waiting for students...')+'</div>';
+      }
+      html+='</div>';
+      if(attendanceTimer)clearTimeout(attendanceTimer);
+      attendanceTimer=setTimeout(function(){renderTabAttendance(c);},1000);
+    } else {
+      html='<div class="attendance-qr" style="padding:40px">'
+        +'<div style="font-size:48px;margin-bottom:12px">📋</div>'
+        +'<h3>'+__('لا توجد جلسة حضور نشطة','No active session')+'</h3>'
+        +'<p style="color:var(--text-muted);font-size:13px;margin:6px 0 16px">'+__('ابدأ جلسة لتوليد أكواد QR','Start a session to generate QR codes')+'</p>'
+        +'<button class="btn btn-primary" onclick="startAttendanceSession('+c.id+')">✅ '+__('بدء جلسة حضور','Start Attendance Session')+'</button>'
+        +'</div>';
+      var sessions=DB.getAttendanceForCourse(c.id);
+      if(sessions.length){
+        html+='<div class="attendance-history"><h3 style="font-size:14px;font-weight:700;margin-bottom:8px">📋 '+__('الجلسات السابقة','Past Sessions')+'</h3>';
+        for(a=0;a<sessions.length;a++){
+          var s=sessions[a];
+          html+='<div class="ah-item"><span class="ah-date">📅 '+s.date+' · '+s.startTime+(s.endTime?' - '+s.endTime:'')+'</span><span class="ah-status">'+s.records.length+' '+__('حاضر','attended')+'</span></div>';
+        }
+        html+='</div>';
+      }
+    }
+  } else {
+    var studentAttendance=DB.getAttendanceForCourse(c.id);
+    html='<div class="attendance-scan-btn">'
+      +'<div class="scan-icon" onclick="openScanModal('+c.id+')">📷</div>'
+      +'<h3>'+__('امسح رمز QR','Scan QR Code')+'</h3>'
+      +'<p style="color:var(--text-muted);font-size:13px;margin-top:4px">'+__('اضغط على أيقونة الكاميرا لمسح أو إدخال الكود','Click the camera icon to scan or enter code')+'</p>'
+      +'</div>';
+    if(studentAttendance.length){
+      html+='<div class="attendance-history"><h3 style="font-size:14px;font-weight:700;margin-bottom:8px">📋 '+__('حضوري','My Attendance')+'</h3>';
+      for(a=0;a<studentAttendance.length;a++){
+        var sa=studentAttendance[a];
+        var present=sa.records.some(function(r){return r.studentName===U.name});
+        html+='<div class="ah-item"><span class="ah-date">📅 '+sa.date+(sa.startTime?' · '+sa.startTime:'')+'</span>'
+          +(present?'<span class="ah-status present">✅ '+__('حاضر','Present')+'</span>':'<span class="ah-status absent">❌ '+__('غائب','Absent')+'</span>')
+          +'</div>';
+      }
+      html+='</div>';
+    } else {
+      html+='<div class="empty-state"><div class="e-icon">📋</div><h3>'+__('لا توجد جلسات حضور بعد','No attendance sessions yet')+'</h3></div>';
+    }
+  }
+  el.innerHTML=html;
+}
+
+var lastAttendCount=0;
+function startAttendanceSession(cid){
+  var s=DB.startAttendance(cid);
+  lastAttendCount=0;
+  toast(__('تم بدء الجلسة! أكواد QR نشطة','Session started! QR codes active'));
+  if(cid)openCourse(cid);
+}
+
+function endAttendanceSession(cid){
+  var s=DB.getActiveSession(cid);
+  if(s){DB.endAttendance(s.id);toast(__('تم إنهاء الجلسة','Session ended'));}
+  if(attendanceTimer){clearTimeout(attendanceTimer);attendanceTimer=null;}
+  if(cid)openCourse(cid);
+}
+
+var qrScannerInstance=null;
+var pendingLocation=null;
+var pendingGsUrl=null;
+function openScanModal(courseId){
+  if(qrScannerInstance){qrScannerInstance.stop().catch(function(){});qrScannerInstance=null;}
+  pendingLocation=null;pendingGsUrl=null;
+  var isFile=window.location.protocol==='file:';
+  openModal('<h2>📷 '+__('مسح QR لتسجيل الحضور','Scan QR for Attendance')+'</h2>'
+    +'<div class="modal-sub">'+__('امسح رمز QR الظاهر على شاشة المعلّم','Scan the QR code on the teacher\'s screen')+'</div>'
+    +(isFile?'<div style="background:#fef3c7;color:#92400e;padding:10px 14px;border-radius:8px;font-size:12px;margin-bottom:10px">⚠️ '+__('الكاميرا تحتاج HTTPS أو localhost. استخدم الإدخال اليدوي أدناه.','Camera needs HTTPS or localhost. Use manual entry below.')+'</div>':'')
+    +'<div class="qr-scanner-container" id="qrScannerContainer">'
+    +'<div id="qrScannerReader" style="width:100%;min-height:200px">'
+    +'<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;gap:10px;padding:20px">'
+    +'<div style="font-size:48px">📷</div>'
+    +'<button class="btn btn-primary" onclick="startCameraEngine('+courseId+')" style="font-size:16px;padding:14px 28px">📷 '+__('اضغط لفتح الكاميرا','Tap to open camera')+'</button>'
+    +'<div style="font-size:11px;color:var(--text-muted)">'+__('سيُطلب منك السماح بالوصول إلى الكاميرا','You will be asked for camera permission')+'</div>'
+    +'</div></div></div>'
+    +'<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">'
+    +'<div class="form-group" style="margin-bottom:4px"><label>'+__('أدخل رقمك الجامعي','Enter your student ID')+'</label>'
+    +'<input id="qrScanInput" placeholder="'+__('الرقم الجامعي','Student ID')+'" style="text-align:center;font-weight:700;font-size:18px">'
+    +'</div></div>'
+    +'<div style="text-align:center;margin:4px 0 8px;font-size:12px;color:var(--text-muted)" id="qrScanStatus"></div>'
+    +'<div class="modal-actions">'
+    +'<button class="btn btn-outline" onclick="closeScanModal('+courseId+')">'+__('إلغاء','Cancel')+'</button>'
+    +'<button class="btn btn-primary" onclick="submitAttendance('+courseId+')">✅ '+__('تسجيل الحضور','Mark Attendance')+'</button>'
+    +'</div>');
+  // Auto-detect location via GPS (background)
+  detectLocation(courseId);
+}
+
+function detectLocation(courseId){
+  if(!navigator.geolocation){return;}
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      var lat=pos.coords.latitude,lon=pos.coords.longitude;
+      var url='https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon+'&addressdetails=1';
+      fetch(url,{headers:{'User-Agent':'ClassroomApp/1.0'}}).then(function(r){return r.json()}).then(function(data){
+        if(data&&data.display_name){
+          pendingLocation={address:data.display_name,lat:lat,lon:lon};
+        } else {
+          pendingLocation={address:lat.toFixed(4)+', '+lon.toFixed(4),lat:lat,lon:lon};
+        }
+        showLocationStatus();
+      }).catch(function(err){
+        pendingLocation={address:lat.toFixed(4)+', '+lon.toFixed(4),lat:lat,lon:lon};
+        showLocationStatus();
+      });
+    },
+    function(err){},
+    {enableHighAccuracy:true,timeout:8000,maximumAge:60000}
+  );
+}
+function showLocationStatus(){
+  var el=document.querySelector('.modal-sub');
+  if(el&&pendingLocation){
+    el.innerHTML='📍 '+__('الموقع: ','Location: ')+pendingLocation.address.substring(0,50)+(pendingLocation.address.length>50?'...':'');
+  }
+}
+function startCameraEngine(courseId){
+  var statusEl=$('qrScanStatus');
+  var container=$('qrScannerReader');
+  container.innerHTML='<div id="qrScannerReaderInner" style="width:100%;min-height:200px"></div>';
+  statusEl.innerHTML='<span style="color:var(--text-muted)">⏳ '+__('جارِ تشغيل الكاميرا...','Starting camera...')+'</span>';
+  setTimeout(function(){
+    try{
+      var html5QrCode=new Html5Qrcode("qrScannerReaderInner");
+      qrScannerInstance=html5QrCode;
+      html5QrCode.start(
+        {facingMode:"environment"},
+        {fps:10,qrbox:{width:200,height:200}},
+        function(decodedText){
+          html5QrCode.stop().catch(function(){});
+          statusEl.innerHTML=(L==='en'?'✅ Code detected!':'✅ تم التعرف على الكود!');
+          // Extract GS URL from QR data if present
+          var qIdx=decodedText.indexOf('?');
+          pendingGsUrl=qIdx>0?decodedText.substring(0,qIdx):'';
+          var loc=pendingLocation?{address:pendingLocation.address,lat:pendingLocation.lat,lon:pendingLocation.lon}:null;
+          showConfirmForm(courseId,'',loc);
+        },
+        function(){}
+      ).then(function(){
+        statusEl.innerHTML=(L==='en'?'📷 Scan the QR code':'📷 امسح رمز QR');
+      }).catch(function(err){
+        var msg=err.message||'';
+        if(msg.indexOf('NotAllowedError')>=0||msg.indexOf('Permission')>=0){
+          statusEl.innerHTML='<div style="color:#f59e0b;font-size:13px">⚠️ '+__('تم رفض الإذن للكاميرا.','Camera permission denied.')+'</div>'
+            +'<div style="font-size:11px;color:var(--text-muted);margin-top:4px">'+__('تحقق من إعدادات المتصفح واسمح بالكاميرا','Check browser settings and allow camera')+'</div>'
+            +'<button class="btn btn-sm btn-primary" onclick="startCameraEngine('+courseId+')" style="margin-top:8px">🔄 '+__('إعادة المحاولة','Try again')+'</button>';
+        } else {
+          statusEl.innerHTML='<div style="color:#ef4444;font-size:13px">⚠️ '+__('الكاميرا غير متاحة','Camera not available')+'</div>'
+            +'<div style="font-size:11px;color:var(--text-muted);margin-top:4px">'+msg.substring(0,80)+'</div>';
+        }
+      });
+    } catch(e){
+      statusEl.innerHTML='<span style="color:var(--text-muted)">⚠️ '+__('الماسح غير متاح. أدخل الكود يدوياً.','Scanner not available. Enter code manually.')+'</span>';
+    }
+  },300);
+}
+function showConfirmForm(courseId,code,loc){
+  var locStr=loc?loc.address.substring(0,50):'';
+  openModal('<h2>📝 '+__('تسجيل الحضور','Attendance Form')+'</h2>'
+    +'<div class="modal-sub">'+__('أدخل بياناتك ثم اضغط إرسال','Enter your data then click Send')+'</div>'
+    +'<div class="form-group"><label>👤 '+__('الاسم','Name')+'</label>'
+    +'<input id="cfName" value="'+U.name+'" style="font-size:15px;padding:12px"></div>'
+    +'<div class="form-group"><label>🔑 '+__('الرقم الجامعي','Student ID')+'</label>'
+    +'<input id="cfCode" value="" placeholder="'+__('أدخل رقمك الجامعي','Enter your student ID')+'" style="text-align:center;font-weight:700;letter-spacing:3px;font-size:18px"></div>'
+    +'<div class="form-group"><label>👥 '+__('المجموعة','Group')+'</label>'
+    +'<input id="cfGroup" placeholder="A / B / C" style="font-size:15px;padding:12px"></div>'
+    +'<div class="form-group"><label>⏰ '+__('الفترة','Period')+'</label>'
+    +'<select id="cfPeriod" style="font-size:15px;padding:12px">'
+    +'<option value="">—</option>'
+    +'<option value="الأولى">'+__('الأولى','First')+'</option>'
+    +'<option value="الثانية">'+__('الثانية','Second')+'</option>'
+    +'<option value="الثالثة">'+__('الثالثة','Third')+'</option>'
+    +'<option value="الرابعة">'+__('الرابعة','Fourth')+'</option>'
+    +'</select></div>'
+    +(locStr?'<div style="font-size:11px;color:var(--text-muted);margin:4px 0">📍 '+locStr+'</div>':'')
+    +'<div class="modal-actions">'
+    +'<button class="btn btn-outline" onclick="closeScanModal('+courseId+')">'+__('إلغاء','Cancel')+'</button>'
+    +'<button class="btn btn-primary" onclick="confirmAttendance('+courseId+')" style="flex:1">📤 '+__('إرسال','Send')+'</button>'
+    +'</div>');
+}
+
+function toggleQrInput(courseId){
+  var manual=$('qrManualInput'),btn=document.querySelector('.scan-toggle-btn');
+  if(manual.style.display==='block'){
+    manual.style.display='none';
+    if(qrScannerInstance){
+      qrScannerInstance.resume().catch(function(){});
+      btn.innerHTML='⌨️ '+__('أو أدخل الكود يدوياً','Or enter code manually');
+    }
+  } else {
+    manual.style.display='block';
+    $('qrSubmitBtn').style.display='inline-flex';
+    if(qrScannerInstance){
+      qrScannerInstance.pause().catch(function(){});
+      btn.innerHTML='📷 '+__('أو استخدم الكاميرا','Or use camera');
+    }
+    setTimeout(function(){$('qrScanInput')?.focus();},200);
+  }
+}
+
+function restartQrScanner(courseId){
+  if(qrScannerInstance){
+    qrScannerInstance.stop().catch(function(){});
+    qrScannerInstance=null;
+  }
+  openScanModal(courseId);
+}
+
+function closeScanModal(courseId){
+  pendingGsUrl=null;
+  if(qrScannerInstance){
+    qrScannerInstance.stop().catch(function(){});
+    qrScannerInstance=null;
+  }
+  closeModal();
+}
+
+function submitAttendance(courseId){
+  var loc=pendingLocation?{address:pendingLocation.address,lat:pendingLocation.lat,lon:pendingLocation.lon}:null;
+  var locStr=loc?loc.address.substring(0,50):'';
+  openModal('<h2>📝 '+__('تسجيل الحضور','Attendance Form')+'</h2>'
+    +'<div class="modal-sub">'+__('أدخل بياناتك ثم اضغط إرسال','Enter your data then click Send')+'</div>'
+    +'<div class="form-group"><label>👤 '+__('الاسم','Name')+'</label>'
+    +'<input id="cfName" value="'+U.name+'" style="font-size:15px;padding:12px"></div>'
+    +'<div class="form-group"><label>🔑 '+__('الرقم الجامعي','Student ID')+'</label>'
+    +'<input id="cfCode" value="" placeholder="'+__('أدخل رقمك الجامعي','Enter your student ID')+'" style="text-align:center;font-weight:700;letter-spacing:3px;font-size:18px"></div>'
+    +'<div class="form-group"><label>👥 '+__('المجموعة','Group')+'</label>'
+    +'<input id="cfGroup" placeholder="A / B / C" style="font-size:15px;padding:12px"></div>'
+    +'<div class="form-group"><label>⏰ '+__('الفترة','Period')+'</label>'
+    +'<select id="cfPeriod" style="font-size:15px;padding:12px">'
+    +'<option value="">—</option>'
+    +'<option value="الأولى">'+__('الأولى','First')+'</option>'
+    +'<option value="الثانية">'+__('الثانية','Second')+'</option>'
+    +'<option value="الثالثة">'+__('الثالثة','Third')+'</option>'
+    +'<option value="الرابعة">'+__('الرابعة','Fourth')+'</option>'
+    +'</select></div>'
+    +(locStr?'<div style="font-size:11px;color:var(--text-muted);margin:4px 0">📍 '+locStr+'</div>':'')
+    +'<div class="modal-actions">'
+    +'<button class="btn btn-outline" onclick="closeScanModal('+courseId+')">'+__('إلغاء','Cancel')+'</button>'
+    +'<button class="btn btn-primary" onclick="confirmAttendance('+courseId+')" style="flex:1">📤 '+__('إرسال','Send')+'</button>'
+    +'</div>');
+}
+function confirmAttendance(courseId){
+  var name=$('cfName').value.trim(),code=$('cfCode').value.trim().toUpperCase(),group=$('cfGroup').value.trim(),period=$('cfPeriod').value;
+  if(!name){toast(__('الرجاء إدخال الاسم','Please enter your name'),'error');return;}
+  if(!code){toast(__('الرجاء إدخال رقمك الجامعي','Please enter your student ID'),'error');return;}
+  var loc=pendingLocation?{address:pendingLocation.address,lat:pendingLocation.lat,lon:pendingLocation.lon}:null;
+  var ok=DB.markAttendance(courseId,code,name,loc,group,period);
+  pendingLocation=null;
+  closeModal();
+  playNotifSound();
+  if(ok){
+    // Also send to Google Sheet if configured
+    var gsUrl=getGSUrl()||pendingGsUrl||'';
+    pendingGsUrl=null;
+    if(gsUrl){
+      var c=DB.getCourse(courseId);
+      var gsParams='?code='+encodeURIComponent(code)+'&course='+encodeURIComponent(c?c.title:'')+'&name='+encodeURIComponent(name)+'&group='+encodeURIComponent(group)+'&period='+encodeURIComponent(period);
+      new Image().src=gsUrl+gsParams;
+      console.log('[GS] sent:',gsUrl+gsParams);
+      toast(__('📤 أرسل إلى الشيت','📤 Sent to sheet'));
+    }
+    console.log('[ATTENDANCE]',name,'code:',code,'group:',group,'period:',period,'loc:',loc?loc.address:'');
+    toast(__('✅ حضرت!','✅ Present!'));
+    if(courseId)openCourse(courseId);
+  } else {
+    toast(__('رمز غير صحيح أو منتهي الصلاحية','Invalid or expired code'),'error');
+  }
+}
+
+// ================================================================
+// MODALS
+// ================================================================
+function openModal(html){$('modalContent').innerHTML=html;$('modalOverlay').classList.add('show')}
+function closeModal(){$('modalOverlay').classList.remove('show')}
+
+// ---- SETTINGS ----
+function getGSUrl(){return localStorage.getItem('gs_url')||''}
+function openSettings(){
+  var saved=getGSUrl();
+  openModal('<h2>⚙️ '+__('الإعدادات','Settings')+'</h2>'
+    +'<div class="modal-sub">'+__('إعدادات Google Sheets لتسجيل الحضور','Google Sheets attendance settings')+'</div>'
+    +'<div class="form-group"><label>📍 '+__('رابط تطبيق الويب (Google Apps Script)','Web App URL (Google Apps Script)')+'</label>'
+    +'<input id="gsUrlInput" value="'+saved+'" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:13px;direction:ltr;text-align:left"></div>'
+    +'<p style="font-size:11px;color:var(--text-muted);line-height:1.6;margin-top:8px">'
+    +__('1. أنشئ جدول Google Sheet جديد<br>2. افتح الإضافات → Apps Script<br>3. انسخ الكود أدناه والصقه<br>4. انشر → تطبيق ويب → Everyone<br>5. انسخ الرابط والصقه هنا','1. Create a new Google Sheet<br>2. Extensions → Apps Script<br>3. Copy the code below and paste it<br>4. Deploy → Web app → Everyone<br>5. Copy the URL and paste it here')
+    +'</p>'
+    +'<button class="btn btn-sm btn-outline" onclick="toggleGScode()" style="margin:6px 0">📋 '+__('عرض كود Apps Script','Show Apps Script code')+'</button>'
+    +'<div id="gsCodeBlock" style="display:none;margin:6px 0;padding:10px;background:#1e1e2e;color:#cdd6f4;border-radius:8px;font-size:10px;font-family:monospace;white-space:pre-wrap;max-height:200px;overflow-y:auto">'
+    +$('gsCodeTemplate').textContent
+    +'</div>'
+    +'<div class="modal-actions">'
+    +'<button class="btn btn-outline" onclick="closeModal()">'+__('إلغاء','Cancel')+'</button>'
+    +'<button class="btn btn-primary" onclick="saveGSUrl()">💾 '+__('حفظ','Save')+'</button>'
+    +'</div>');
+}
+function toggleGScode(){
+  var el=$('gsCodeBlock');
+  el.style.display=el.style.display==='block'?'none':'block';
+}
+function saveGSUrl(){
+  var val=$('gsUrlInput').value.trim();
+  if(val){localStorage.setItem('gs_url',val);toast(__('تم حفظ الرابط!','URL saved!'));closeModal();}
+  else {localStorage.removeItem('gs_url');toast(__('تم إزالة الرابط','URL removed'));closeModal();}
+}
+
+// ---- ADD COURSE ----
+function openAddCourseModal(){
+  openModal(`
+    <h2>${__('➕ إضافة مقرر جديد','➕ Add New Course')}</h2>
+    <div class="modal-sub">${__('أدخل معلومات المقرر','Enter course details')}</div>
+    <div class="form-group"><label>${__('اسم المقرر (عربي)','Course Name')}</label><input id="cTitle" placeholder="رياضيات متقدمة"></div>
+    <div class="form-group"><label>${__('اسم المقرر (English)','Name (English)')}</label><input id="cTitleEn" placeholder="Advanced Math"></div>
+    <div class="form-group"><label>${__('الوصف','Description')}</label><textarea id="cDesc" placeholder="${__('وصف المقرر','Course description')}"></textarea></div>
+    <div class="form-group"><label>Color</label><input type="color" id="cColor" value="#4f46e5" style="height:36px;padding:3px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-primary" onclick="addCourse()">${__('إضافة','Add')}</button>
+    </div>
+  `);
+}
+function addCourse(){
+  const t=$('cTitle').value.trim(),te=$('cTitleEn').value.trim()||t,d=$('cDesc').value.trim()||'مقرر دراسي',cl=$('cColor').value;
+  if(!t){toast(__('الرجاء إدخال اسم المقرر','Please enter a course name'),'error');return}
+  const c=DB.addCourse({title:t,titleEn:te,desc:d,descEn:d,teacher:U.name,teacherEn:U.nameEn,color:cl});
+  closeModal();toast(__('تم إنشاء المقرر! كود الانضمام: '+c.code,'Course created! Code: '+c.code));
+  showDashboard();
+}
+
+// ---- JOIN COURSE ----
+function openJoinModal(){
+  openModal(`
+    <h2>${__('🔑 الانضمام إلى مقرر','🔑 Join a Course')}</h2>
+    <div class="modal-sub">${__('أدخل الكود المقدم من المعلّم','Enter the code from your teacher')}</div>
+    <div class="form-group"><label>${__('كود الانضمام','Join Code')}</label><input id="joinCode" placeholder="XXXXXX" style="text-align:center;font-family:monospace;font-size:22px;letter-spacing:7px;text-transform:uppercase;font-weight:700" maxlength="6" oninput="this.value=this.value.toUpperCase()"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-success" onclick="joinCourse()">${__('انضمام','Join')}</button>
+    </div>
+  `);
+  setTimeout(()=>$('joinCode')?.focus(),200);
+}
+function joinCourse(){
+  const code=$('joinCode').value.trim().toUpperCase();
+  if(!code){toast(__('الرجاء إدخال الكود','Please enter a code'),'error');return}
+  const c=DB.getCourseByCode(code);
+  if(!c){toast(__('كود غير صحيح','Invalid code'),'error');return}
+  if(!DB.enroll(U.name,c.id)){toast(__('أنت مسجل بالفعل!','Already enrolled!'),'error');closeModal();return}
+  closeModal();toast(__('تم الانضمام إلى "'+__(c.title,c.titleEn)+'" بنجاح!','Joined "'+__(c.title,c.titleEn)+'"!'));
+  showDashboard();
+}
+
+// ---- ADD LECTURE ----
+function openAddLectureModal(courseId){
+  openModal(`
+    <h2>${__('📖 إضافة محاضرة','📖 Add Lecture')}</h2>
+    <div class="modal-sub">${__('أضف محاضرة جديدة','Add a new lecture')}</div>
+    <div class="form-group"><label>${__('العنوان','Title')}</label><input id="lTitle" placeholder="${__('عنوان المحاضرة','Lecture title')}"></div>
+    <div class="form-group"><label>${__('المحتوى','Content')}</label><textarea id="lContent" placeholder="${__('محتويات المحاضرة','Lecture content')}"></textarea></div>
+    <input type="hidden" id="lCourseId" value="${courseId}">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-primary" onclick="addLecture()">${__('إضافة','Add')}</button>
+    </div>
+  `);
+}
+function addLecture(){
+  const t=$('lTitle').value.trim(),c=$('lContent').value.trim()||'لا يوجد محتوى',ci=parseInt($('lCourseId').value);
+  if(!t){toast(__('الرجاء إدخال العنوان','Please enter a title'),'error');return}
+  DB.addLecture({courseId:ci,title:t,titleEn:t,content:c,contentEn:c});
+  closeModal();toast(__('تمت إضافة المحاضرة!','Lecture added!'));
+  openCourse(ci);
+}
+
+function deleteLecture(id){
+  if(!confirm(__('حذف المحاضرة؟','Delete lecture?')))return;
+  const idx=DB._lectures.findIndex(l=>l.id===id);if(idx>-1)DB._lectures.splice(idx,1);
+  toast(__('تم الحذف','Deleted'));if(cid)openCourse(cid);
+}
+
+// ---- CREATE POST ----
+function openCreatePostModal(courseId){
+  openModal(`
+    <h2>${__('💬 إضافة منشور','💬 New Post')}</h2>
+    <div class="modal-sub">${__('شارك إعلاناً أو سؤالاً أو مناقشة','Share an announcement, question, or discussion')}</div>
+    <div class="form-group"><label>${__('نوع المنشور','Post Type')}</label>
+      <select id="pType">
+        <option value="announcement">${__('📢 إعلان','📢 Announcement')}</option>
+        <option value="question">${__('❓ سؤال','❓ Question')}</option>
+        <option value="general">${__('💬 عام','💬 General')}</option>
+      </select>
+    </div>
+    <div class="form-group"><label>${__('المحتوى','Content')}</label><textarea id="pContent" placeholder="${__('اكتب منشورك...','Write your post...')}" style="min-height:100px"></textarea></div>
+    <input type="hidden" id="pCourseId" value="${courseId}">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-primary" onclick="createPost()">${__('نشر','Post')}</button>
+    </div>
+  `);
+}
+function createPost(){
+  const type=$('pType').value,content=$('pContent').value.trim(),ci=parseInt($('pCourseId').value);
+  if(!content){toast(__('الرجاء كتابة المنشور','Please write something'),'error');return}
+  DB.addPost({courseId:ci,author:U.name,authorEn:U.nameEn,role:U.role,roleEn:U.role==='teacher'?'Teacher':'Student',content,contentEn:content,type,avatar:U.avatar});
+  closeModal();toast(__('تم النشر!','Posted!'));
+  // Notify enrolled students
+  DB.getStudents(ci).forEach(s=>{
+    if(s!==U.name)notif(s,'post',`${U.name} نشر منشوراً جديداً`,`${U.nameEn} posted a new update`);
+  });
+  openCourse(ci);
+}
+
+// ---- CREATE ASSIGNMENT ----
+function openCreateAssignmentModal(courseId){
+  openModal(`
+    <h2>${__('📝 إضافة واجب','📝 Add Assignment')}</h2>
+    <div class="modal-sub">${__('أضف واجباً جديداً للطلاب','Add a new assignment for students')}</div>
+    <div class="form-group"><label>${__('عنوان الواجب','Title')}</label><input id="aTitle" placeholder="${__('عنوان الواجب','Assignment title')}"></div>
+    <div class="form-group"><label>${__('الوصف','Description')}</label><textarea id="aDesc" placeholder="${__('وصف الواجب والمطلوب','Description and requirements')}"></textarea></div>
+    <div class="form-group"><label>${__('موعد التسليم','Due Date')}</label><input type="date" id="aDue" value="${new Date(Date.now()+7*86400000).toISOString().split('T')[0]}"></div>
+    <div class="form-group"><label>${__('مرفق (اختياري)','Attachment (optional)')}</label><input type="text" id="aFile" placeholder="${__('اسم الملف أو الرابط','File name or link')}"></div>
+    <input type="hidden" id="aCourseId" value="${courseId}">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-primary" onclick="createAssignment()">${__('نشر الواجب','Post Assignment')}</button>
+    </div>
+  `);
+}
+function createAssignment(){
+  const t=$('aTitle').value.trim(),d=$('aDesc').value.trim(),due=$('aDue').value,f=$('aFile').value.trim(),ci=parseInt($('aCourseId').value);
+  if(!t){toast(__('الرجاء إدخال العنوان','Please enter a title'),'error');return}
+  if(!due){toast(__('الرجاء اختيار موعد التسليم','Please select a due date'),'error');return}
+  DB.addAssignment({courseId:ci,title:t,titleEn:t,desc:d,descEn:d,dueDate:due,file:f||null});
+  closeModal();toast(__('تم نشر الواجب!','Assignment posted!'));
+  // Notify all enrolled students
+  DB.getStudents(ci).forEach(s=>{
+    if(s!==U.name)notif(s,'assignment',`واجب جديد: ${t}`,`New assignment: ${t}`,null);
+  });
+  openCourse(ci);
+}
+
+// ---- SUBMIT ASSIGNMENT (Student) ----
+function openSubmitModal(assignmentId){
+  const a=DB.getAssignment(assignmentId);if(!a)return;
+  const mySub=DB.getMySubmission(assignmentId,U.name);
+  openModal(`
+    <h2>${__('📎 تسليم الواجب','📎 Submit Assignment')}</h2>
+    <div class="modal-sub">${__(a.title,a.titleEn)}</div>
+    <div class="form-group"><label>${__('الحل','Solution')}</label><textarea id="sContent" placeholder="${__('اكتب حلك هنا...','Write your solution here...')}" style="min-height:100px">${mySub?mySub.content:''}</textarea></div>
+    <div class="form-group"><label>${__('رفع ملف (اختياري)','Upload file (optional)')}</label>
+      <input type="file" id="sFileInput" style="font-family:inherit;font-size:13px" onchange="handleFileSelect(event)">
+      <input type="hidden" id="sFileName" value="${mySub?mySub.file:''}">
+      <div id="sFileNameDisplay" style="font-size:12px;color:var(--text-muted);margin-top:4px">${mySub?mySub.file:''}</div>
+    </div>
+    <input type="hidden" id="sAid" value="${assignmentId}">
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">${__('إلغاء','Cancel')}</button>
+      <button class="btn btn-success" onclick="submitAssignment()">${__('تسليم','Submit')}</button>
+    </div>
+  `);
+}
+function handleFileSelect(e){
+  const file=e.target.files[0];if(!file)return;
+  $('sFileName').value=file.name;$('sFileNameDisplay').textContent=file.name;
+}
+function submitAssignment(){
+  const aid=parseInt($('sAid').value),content=$('sContent').value.trim(),file=$('sFileName').value;
+  if(!content&&!file){toast(__('الرجاء كتابة الحل أو رفع ملف','Please write a solution or upload a file'),'error');return}
+  const existing=DB.getMySubmission(aid,U.name);
+  if(existing){existing.content=content||existing.content;existing.file=file||existing.file;existing.submittedAt=today();existing.graded=false;existing.grade=null;existing.comment=''}
+  else DB.addSubmission({assignmentId:aid,studentName:U.name,content:content||'بدون محتوى',file:file||null});
+  closeModal();toast(__('تم تسليم الواجب!','Assignment submitted!'));
+  if(cid)openCourse(cid);
+}
+
+// ---- SUBMISSIONS / GRADING (Teacher) ----
+function openSubmissionsModal(assignmentId){
+  const a=DB.getAssignment(assignmentId);if(!a)return;
+  const subs=DB.getSubmissions(assignmentId);
+  const title=__(a.title,a.titleEn);
+
+  if(!subs.length){
+    toast(__('لا يوجد تسليمات بعد','No submissions yet'),'error');return;
+  }
+  openModal(`
+    <h2>${__('📊 تصحيح: ','Grading: ')}${title}</h2>
+    <div class="modal-sub">${__('ضع الدرجات والتعليقات للطلاب','Grade student submissions')}</div>
+    <div style="overflow-x:auto">
+    <table class="submissions-table" style="width:100%;min-width:500px">
+      <thead><tr>
+        <th>#</th><th>${__('الطالب','Student')}</th><th>${__('التسليم','Submitted')}</th><th>${__('الملف','File')}</th><th>${__('الدرجة','Grade')}</th><th>${__('تعليق','Comment')}</th><th>${__('حفظ','Save')}</th>
+      </tr></thead>
+      <tbody>${subs.map((s,i)=>`
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${s.studentName}</strong></td>
+          <td style="font-size:11px">${s.submittedAt}</td>
+          <td>${s.file?`📎 ${s.file}`:'—'}</td>
+          <td><input class="grade-input" id="g-${s.id}" value="${s.grade!==null?s.grade:''}" placeholder="0" type="number" min="0" max="100"></td>
+          <td><input class="comment-input" id="c-${s.id}" value="${s.comment||''}" placeholder="${__('تعليق','Comment')}"></td>
+          <td><button class="btn btn-xs btn-primary" onclick="saveGrade(${s.id})">💾</button></td>
+        </tr>`).join('')}</tbody>
+    </table>
+    </div>
+    <div class="modal-actions" style="margin-top:14px"><button class="btn btn-outline" onclick="closeModal()">${__('إغلاق','Close')}</button></div>
+  `);
+}
+
+function saveGrade(submissionId){
+  const s=DB._submissions.find(x=>x.id===submissionId);if(!s)return;
+  const g=parseInt($('g-'+submissionId).value),c=$('c-'+submissionId).value.trim();
+  if(isNaN(g)||g<0||g>100){toast(__('الرجاء إدخال درجة بين 0 و 100','Enter a grade between 0 and 100'),'error');return}
+  s.grade=g;s.comment=c;s.graded=true;
+  // Notify student
+  notif(s.studentName,'grade',`تم تصحيح واجب "${DB.getAssignment(s.assignmentId)?.title}" - الدرجة: ${g}`,`Assignment "${DB.getAssignment(s.assignmentId)?.titleEn}" graded - Score: ${g}`);
+  toast(__('تم حفظ الدرجة!','Grade saved!'));
+}
+
+// ================================================================
+// UTILS
+// ================================================================
+function copy(t){navigator.clipboard.writeText(t).then(()=>toast(__('تم النسخ!','Copied!')))}
+function playNotifSound(){
+  try{
+    var ctx=new (window.AudioContext||window.webkitAudioContext)();
+    var osc=ctx.createOscillator();var gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=800;osc.type='sine';
+    gain.gain.setValueAtTime(0.3,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.3);
+    osc.start(ctx.currentTime);osc.stop(ctx.currentTime+0.3);
+  }catch(e){}
+}
+function extractCode(raw){
+  var s=raw.trim().toUpperCase();
+  // Try to extract code= param from URL
+  var m=s.match(/[?&]CODE=([A-Z0-9]+)/i);
+  if(m)return m[1];
+  // If it's a plain code (6-12 alphanumeric)
+  if(/^[A-Z0-9]{6,12}$/.test(s))return s;
+  return '';
+}
+function downloadAttendanceExcel(cid){
+  var c=DB.getCourse(cid);if(!c)return;
+  var sessions=DB.getAttendanceForCourse(cid);
+  var students=DB.getStudents(cid);
+  if(!students.length){toast(__('لا يوجد طلاب','No students'),'error');return;}
+  var rows=[['Student Name','Total Sessions','Attended','Percentage (%)']];
+  for(var i=0;i<students.length;i++){
+    var sn=students[i],total=0,att=0;
+    for(var j=0;j<sessions.length;j++){total++;if(sessions[j].records.some(function(r){return r.studentName===sn}))att++;}
+    var pct=total?Math.round(att/total*100):0;
+    rows.push([sn,total,att,pct]);
+  }
+  // Add session details
+  rows.push([]);rows.push(['Session Details']);
+  rows.push(['Date','Start Time','End Time','Attended Students']);
+  for(var k=0;k<sessions.length;k++){
+    var s=sessions[k];
+    rows.push([s.date,s.startTime,s.endTime||'Active',(L==='en'?s.records.length+' students':s.records.length+' طالب')]);
+    for(var m=0;m<s.records.length;m++){
+      var rec=s.records[m];
+      var locStr=rec.location?'📍 '+rec.location.address.substring(0,60):'';
+      var grpStr=rec.group||'';
+      var prdStr=rec.period||'';
+      rows.push(['',rec.time+'',rec.studentName,'✓',locStr,grpStr,prdStr]);
+    }
+  }
+  // Add headers for extra columns
+  rows[3][4]='Location';rows[3][5]='Group';rows[3][6]='Period';
+  try{
+    var wb=XLSX.utils.book_new();
+    var ws=XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(wb,ws,'Attendance');
+    XLSX.writeFile(wb,c.title+'_Attendance.xlsx');
+    toast(__('تم تحميل ملف Excel!','Excel file downloaded!'));
+  }catch(e){
+    toast(__('خطأ في إنشاء الملف','Error creating file'),'error');
+  }
+}
+
+// ================================================================
+// INIT LANG
+// ================================================================
+const savedLang=localStorage.getItem('classroom_lang');
+if(savedLang)setLang(savedLang);
+</script>
+</body>
+</html>
